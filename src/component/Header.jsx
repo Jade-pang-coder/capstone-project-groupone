@@ -69,6 +69,14 @@ const Header = ({ onNavigate }) => {
           <button className="nav-link" onClick={() => onNavigate("products")}>
             Products
           </button>
+          {!isAuthenticated && (
+            <button
+              className="nav-link"
+              onClick={() => onNavigate("track-order")}
+            >
+              Track Order
+            </button>
+          )}
         </nav>
       </div>
     </header>
