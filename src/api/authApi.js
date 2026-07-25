@@ -1,3 +1,5 @@
+import bcrypt from "bcryptjs";
+
 // Testing by Subodh  
 const API_BASE_URL = "https://capstone-project-backend-delta.vercel.app/api";
 
@@ -16,12 +18,25 @@ const normalizeUser = (user) => ({
   name: user.name || user.full_name,
 });
 
-const hashPassword = async (password) => {
+const legacyHashPassword = async (password) => {
   const bytes = new TextEncoder().encode(password);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest), (byte) =>
     byte.toString(16).padStart(2, "0"),
   ).join("");
+};
+
+const hashPassword = async (password) => {
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
+};
+
+const verifyPassword = async (password, hash) => {
+  if (hash && (hash.startsWith("$2a$") || hash.startsWith("$2b$") || hash.startsWith("$2y$"))) {
+    return await bcrypt.compare(password, hash);
+  }
+  const legacyHash = await legacyHashPassword(password);
+  return legacyHash === hash;
 };
 
 const credentialKey = (email) =>
@@ -93,8 +108,8 @@ export const login = async (email, password) => {
     );
   }
 
-  const enteredPasswordHash = await hashPassword(password);
-  if (enteredPasswordHash !== savedPasswordHash) {
+  const isMatch = await verifyPassword(password, savedPasswordHash);
+  if (!isMatch) {
     throw new Error("Incorrect email or password");
   }
 
