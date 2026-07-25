@@ -49,12 +49,20 @@ const HomePage = ({ onNavigate }) => {
         <div className="hero-content">
           <h2>Welcome to E-Shop</h2>
           <p>Discover amazing products at great prices</p>
-          <button
-            className="btn-primary"
-            onClick={() => onNavigate("products")}
-          >
-            Shop Now
-          </button>
+          <div className="hero-actions">
+            <button
+              className="btn-primary"
+              onClick={() => onNavigate("products")}
+            >
+              Shop Now
+            </button>
+            <button
+              className="btn-secondary"
+              onClick={() => onNavigate("track-order")}
+            >
+              Track Guest Order
+            </button>
+          </div>
         </div>
       </section>
 
