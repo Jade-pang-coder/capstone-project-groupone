@@ -11,15 +11,19 @@ const readResponse = async (response, fallbackMessage) => {
   return data;
 };
 
+// Build headers — omit Authorization when token is null/undefined
+const buildHeaders = (token, extra = {}) => ({
+  "Content-Type": "application/json",
+  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  ...extra,
+});
+
 // Get all cart items
 export const getCartItems = async (token, cartId) => {
   try {
     const response = await fetch(`${API_BASE_URL}/cart-items`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: buildHeaders(token),
     });
     if (!response.ok) {
       throw new Error("Failed to fetch cart items");
@@ -39,10 +43,7 @@ export const getCartItemById = async (cartItemId, token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/cart-items/${cartItemId}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: buildHeaders(token),
     });
     if (!response.ok) {
       throw new Error("Failed to fetch cart item");
@@ -59,10 +60,7 @@ export const addCartItem = async (cartItemData, token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/cart-items`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: buildHeaders(token),
       body: JSON.stringify(cartItemData),
     });
     return await readResponse(response, "Failed to add cart item");
@@ -77,10 +75,7 @@ export const updateCartItem = async (cartItemId, cartItemData, token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/cart-items/${cartItemId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: buildHeaders(token),
       body: JSON.stringify(cartItemData),
     });
     return await readResponse(response, "Failed to update cart item");
@@ -96,7 +91,7 @@ export const removeCartItem = async (cartItemId, token) => {
     const response = await fetch(`${API_BASE_URL}/cart-items/${cartItemId}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
     return await readResponse(response, "Failed to remove cart item");

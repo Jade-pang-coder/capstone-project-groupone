@@ -41,8 +41,8 @@ const CartPage = ({ onNavigate }) => {
                 <span>Action</span>
               </div>
               <div className="cart-items">
-                {cart.map((item) => (
-                  <CartItem key={item.id} item={item} />
+                {cart.map((item, idx) => (
+                  <CartItem key={item.id ?? `${item.product_id}-${idx}`} item={item} />
                 ))}
               </div>
             </div>

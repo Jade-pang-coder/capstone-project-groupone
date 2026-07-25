@@ -1,14 +1,18 @@
 const API_BASE_URL = "https://capstone-project-backend-delta.vercel.app/api";
 
+// Build headers — omit Authorization when token is null/undefined
+const buildHeaders = (token, extra = {}) => ({
+  "Content-Type": "application/json",
+  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  ...extra,
+});
+
 // Get all carts
 export const getCarts = async (token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/carts`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: buildHeaders(token),
     });
     if (!response.ok) {
       throw new Error("Failed to fetch carts");
@@ -25,10 +29,7 @@ export const getCartById = async (cartId, token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/carts/${cartId}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: buildHeaders(token),
     });
     if (!response.ok) {
       throw new Error("Failed to fetch cart");
@@ -45,10 +46,7 @@ export const createCart = async (cartData, token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/carts`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: buildHeaders(token),
       body: JSON.stringify(cartData),
     });
     if (!response.ok) {
@@ -66,10 +64,7 @@ export const updateCart = async (cartId, cartData, token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/carts/${cartId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: buildHeaders(token),
       body: JSON.stringify(cartData),
     });
     if (!response.ok) {
@@ -88,7 +83,7 @@ export const deleteCart = async (cartId, token) => {
     const response = await fetch(`${API_BASE_URL}/carts/${cartId}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
     if (!response.ok) {

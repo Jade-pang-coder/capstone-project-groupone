@@ -26,7 +26,9 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     }
   };
 
-  const itemTotal = (item.price || 0) * item.quantity;
+  const qty = Number(item.quantity) || 0;
+  const price = Number(item.price) || 0;
+  const itemTotal = price * qty;
 
   return (
     <div className="cart-item">
@@ -45,15 +47,15 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
       <div className="item-quantity">
         <button
           className="qty-btn"
-          onClick={() => handleQuantityChange(item.quantity - 1)}
-          disabled={item.quantity <= 1}
+          onClick={() => handleQuantityChange(qty - 1)}
+          disabled={qty <= 1}
         >
           −
         </button>
         <input
           type="number"
           min="1"
-          value={item.quantity}
+          value={qty}
           onChange={(e) =>
             handleQuantityChange(Math.max(1, parseInt(e.target.value) || 1))
           }
@@ -61,13 +63,13 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
         />
         <button
           className="qty-btn"
-          onClick={() => handleQuantityChange(item.quantity + 1)}
+          onClick={() => handleQuantityChange(qty + 1)}
         >
           +
         </button>
       </div>
       <div className="item-total">
-        <p className="total-price">${itemTotal.toFixed(2)}</p>
+        <p className="total-price">${Number(itemTotal).toFixed(2)}</p>
       </div>
       <button className="btn-remove" onClick={handleRemove}>
         Remove
