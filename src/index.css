@@ -1,0 +1,242 @@
+/* Global Styles - index.css */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+  --border-radius: 5px;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.5;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Selection Color */
+::selection {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+::-moz-selection {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Link Styles */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: #0056b3;
+}
+
+/* Responsive Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+/* List Styles */
+ul,
+ol {
+  margin-left: 1.5em;
+}
+
+li {
+  margin-bottom: 0.5em;
+}
+
+/* Form Styles */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input,
+textarea,
+select {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  background-color: white;
+  color: #333;
+  transition: var(--transition);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Button Styles */
+button {
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  text-align: center;
+  display: inline-block;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+th {
+  background-color: #f8f9fa;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Media Queries for Responsive Typography */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  h4 {
+    font-size: 1.1rem;
+  }
+
+  h5 {
+    font-size: 1rem;
+  }
+
+  h6 {
+    font-size: 0.9rem;
+  }
+}
