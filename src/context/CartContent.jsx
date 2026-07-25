@@ -113,7 +113,9 @@ export const CartProvider = ({ children }) => {
       try {
         const saved = localStorage.getItem("cart");
         if (saved) setCart(JSON.parse(saved));
-      } catch (_) { /* ignore */ }
+      } catch {
+        // Ignore malformed cached data; the empty cart remains usable.
+      }
     } finally {
       setLoading(false);
     }

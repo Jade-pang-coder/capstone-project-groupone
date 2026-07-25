@@ -22,7 +22,12 @@ const DashboardPage = ({ onNavigate }) => {
     setError(null);
     try {
       const data = await getOrders(token);
-      setOrders(data || []);
+      const userOrders = (data || []).filter(
+        (order) => String(order.user_id) === String(user?.id),
+      );
+      setOrders(userOrders);
+      setSelectedOrder(null);
+      setOrderItems([]);
     } catch (err) {
       setError("Failed to load orders");
       console.error("Error fetching orders:", err);
@@ -32,6 +37,16 @@ const DashboardPage = ({ onNavigate }) => {
   };
 
   const handleSelectOrder = async (orderId) => {
+    const ownedOrder = orders.find(
+      (order) =>
+        String(order.id) === String(orderId) &&
+        String(order.user_id) === String(user?.id),
+    );
+    if (!ownedOrder) {
+      setError("You do not have permission to view this order");
+      return;
+    }
+
     try {
       const [orderData, itemsData] = await Promise.all([
         getOrderById(orderId, token),
