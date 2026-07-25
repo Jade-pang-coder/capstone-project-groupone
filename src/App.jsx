@@ -9,6 +9,7 @@ import RegisterPage from "./pages/RegisterPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import DashboardPage from "./pages/DashboardPage";
+import GuestOrderLookupPage from "./pages/GuestOrderLookupPage";
 import "./App.css";
 
 function App() {
@@ -55,6 +56,15 @@ function App() {
       }
       case "dashboard":
         return <DashboardPage onNavigate={handleNavigate} />;
+      case "track-order": {
+        const orderCode = decodeURIComponent(currentPage.split("/")[1] || "");
+        return (
+          <GuestOrderLookupPage
+            initialOrderCode={orderCode}
+            onNavigate={handleNavigate}
+          />
+        );
+      }
       default:
         return <HomePage onNavigate={handleNavigate} />;
     }

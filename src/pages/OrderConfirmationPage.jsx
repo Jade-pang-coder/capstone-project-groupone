@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import "../pages/OrderConfirmationPage.css";
 
 const OrderConfirmationPage = ({ orderId, onNavigate }) => {
-  const { token } = useAuth();
+  const { token, isAuthenticated } = useAuth();
   const [order, setOrder] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +35,17 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
   if (loading) return <div className="loading">Loading order details...</div>;
   if (error) return <div className="error-message">{error}</div>;
   if (!order) return <div className="error-message">Order not found</div>;
+
+  const handleGuestOrderHistory = () => {
+    const openTracking = window.confirm(
+      "Viewing all orders is available to members only. As a guest, use Track Order with your order number. Open Track Order now?",
+    );
+    if (openTracking) {
+      onNavigate(
+        `track-order/${encodeURIComponent(order.order_number || "")}`,
+      );
+    }
+  };
 
   return (
     <div className="order-confirmation-page">
@@ -122,12 +133,36 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
         </div>
 
         <div className="action-buttons">
-          <button
-            className="btn-primary"
-            onClick={() => onNavigate("dashboard")}
-          >
-            View All Orders
-          </button>
+          {isAuthenticated && (
+            <button
+              className="btn-primary"
+              onClick={() => onNavigate("dashboard")}
+            >
+              View All Orders
+            </button>
+          )}
+          {!isAuthenticated && (
+            <>
+              <button
+                className="btn-secondary"
+                onClick={handleGuestOrderHistory}
+              >
+                View All Orders
+              </button>
+              <button
+                className="btn-primary"
+                onClick={() =>
+                  onNavigate(
+                    `track-order/${encodeURIComponent(
+                      order.order_number || "",
+                    )}`,
+                  )
+                }
+              >
+                Track This Order
+              </button>
+            </>
+          )}
           <button className="btn-secondary" onClick={() => onNavigate("home")}>
             Continue Shopping
           </button>
@@ -135,9 +170,17 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
 
         <div className="email-confirmation">
           <p>
-            A confirmation email has been sent to your registered email address.
+            A confirmation email has been sent to{" "}
+            {order.customer_email || "the email address provided"}.
           </p>
-          <p>You can track your order from your dashboard.</p>
+          {isAuthenticated ? (
+            <p>You can track your order from your dashboard.</p>
+          ) : (
+            <p>
+              Save order number #{order.order_number || order.id} for your
+              records.
+            </p>
+          )}
         </div>
       </div>
     </div>
