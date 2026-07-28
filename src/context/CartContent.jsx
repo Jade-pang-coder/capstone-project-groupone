@@ -72,6 +72,33 @@ export const CartProvider = ({ children }) => {
   const resolveCartId = async () =>
     token && user ? resolveAuthCartId() : resolveGuestCartId();
 
+  // Cached cart entries from older builds may not contain the server item ID.
+  // Resolve those entries using the cart/product pair before mutating them.
+  const resolveCartItemId = async (itemOrId) => {
+    const directId =
+      typeof itemOrId === "object" && itemOrId !== null
+        ? itemOrId.id
+        : itemOrId;
+    const numericId = Number(directId);
+    if (Number.isInteger(numericId) && numericId > 0) return numericId;
+
+    if (typeof itemOrId !== "object" || itemOrId === null) {
+      throw new Error("This cart item is missing its server ID");
+    }
+
+    const resolvedCartId = itemOrId.cart_id ?? cartId ?? await resolveCartId();
+    const serverItems = await getCartItems(token, resolvedCartId);
+    const match = serverItems.find(
+      (serverItem) =>
+        String(serverItem.product_id) === String(itemOrId.product_id),
+    );
+    const matchedId = Number(match?.id);
+    if (!Number.isInteger(matchedId) || matchedId <= 0) {
+      throw new Error("This cart item could not be found on the server");
+    }
+    return matchedId;
+  };
+
   // ── Hydrate a cart item with product details ───────────────────────────────
   const hydrateCartItem = async (item) => {
     const product = await getProductById(item.product_id);
@@ -170,12 +197,17 @@ export const CartProvider = ({ children }) => {
   };
 
   // ── Update cart item quantity ─────────────────────────────────────────────
-  const updateCart = async (itemId, quantity) => {
+  const updateCart = async (itemOrId, quantity) => {
     try {
+      const itemId = await resolveCartItemId(itemOrId);
       await updateCartItem(itemId, { quantity }, token);
       setCart((prev) =>
         prev.map((item) =>
-          item.id === itemId ? { ...item, quantity: Number(quantity) || 1 } : item,
+          Number(item.id) === itemId ||
+          (typeof itemOrId === "object" &&
+            String(item.product_id) === String(itemOrId.product_id))
+            ? { ...item, id: itemId, quantity: Number(quantity) || 1 }
+            : item,
         ),
       );
     } catch (err) {
@@ -186,10 +218,20 @@ export const CartProvider = ({ children }) => {
   };
 
   // ── Remove cart item ──────────────────────────────────────────────────────
-  const removeFromCart = async (itemId) => {
+  const removeFromCart = async (itemOrId) => {
     try {
+      const itemId = await resolveCartItemId(itemOrId);
       await removeCartItem(itemId, token);
-      setCart((prev) => prev.filter((item) => item.id !== itemId));
+      setCart((prev) =>
+        prev.filter(
+          (item) =>
+            Number(item.id) !== itemId &&
+            !(
+              typeof itemOrId === "object" &&
+              String(item.product_id) === String(itemOrId.product_id)
+            ),
+        ),
+      );
     } catch (err) {
       setError("Failed to remove from cart");
       console.error("Error removing from cart:", err);
@@ -199,8 +241,10 @@ export const CartProvider = ({ children }) => {
 
   // ── Clear cart ────────────────────────────────────────────────────────────
   const clearCart = async () => {
+    const resolvedCartId = cartId ?? await resolveCartId();
+    const serverItems = await getCartItems(token, resolvedCartId);
     const results = await Promise.allSettled(
-      cart.map((item) => removeCartItem(item.id, token)),
+      serverItems.map((item) => removeCartItem(item.id, token)),
     );
     if (results.some((r) => r.status === "rejected")) {
       setError("Some cart items could not be removed from the server");
