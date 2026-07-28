@@ -18,6 +18,14 @@ const buildHeaders = (token, extra = {}) => ({
   ...extra,
 });
 
+const requireCartItemId = (cartItemId) => {
+  const id = Number(cartItemId);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("A valid cart item ID is required");
+  }
+  return id;
+};
+
 // Get all cart items
 export const getCartItems = async (token, cartId) => {
   try {
@@ -41,7 +49,8 @@ export const getCartItems = async (token, cartId) => {
 // Get cart item by ID
 export const getCartItemById = async (cartItemId, token) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/cart-items/${cartItemId}`, {
+    const id = requireCartItemId(cartItemId);
+    const response = await fetch(`${API_BASE_URL}/cart-items/${id}`, {
       method: "GET",
       headers: buildHeaders(token),
     });
@@ -73,7 +82,8 @@ export const addCartItem = async (cartItemData, token) => {
 // Update cart item
 export const updateCartItem = async (cartItemId, cartItemData, token) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/cart-items/${cartItemId}`, {
+    const id = requireCartItemId(cartItemId);
+    const response = await fetch(`${API_BASE_URL}/cart-items/${id}`, {
       method: "PUT",
       headers: buildHeaders(token),
       body: JSON.stringify(cartItemData),
@@ -88,7 +98,8 @@ export const updateCartItem = async (cartItemId, cartItemData, token) => {
 // Remove cart item
 export const removeCartItem = async (cartItemId, token) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/cart-items/${cartItemId}`, {
+    const id = requireCartItemId(cartItemId);
+    const response = await fetch(`${API_BASE_URL}/cart-items/${id}`, {
       method: "DELETE",
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),

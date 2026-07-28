@@ -10,7 +10,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
 
   const handleQuantityChange = async (newQuantity) => {
     try {
-      await updateCart(item.id, newQuantity);
+      await updateCart(item, newQuantity);
       onUpdateQuantity && onUpdateQuantity(item.id, newQuantity);
     } catch (error) {
       console.error("Error updating quantity:", error);
@@ -19,7 +19,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
 
   const handleRemove = async () => {
     try {
-      await removeFromCart(item.id);
+      await removeFromCart(item);
       onRemove && onRemove(item.id);
     } catch (error) {
       console.error("Error removing item:", error);
