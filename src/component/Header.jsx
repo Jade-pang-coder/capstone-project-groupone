@@ -1,11 +1,14 @@
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContent";
+import { useTranslation } from "react-i18next";
+import LanguageSelector from "./LanguageSelector";
 import ThemeToggle from "./ThemeToggle";
 import "./Header.css";
 
 const Header = ({ onNavigate }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const { getTotalItems } = useCart();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -17,26 +20,28 @@ const Header = ({ onNavigate }) => {
       <div className="container">
         <div className="header-top">
           <h1 className="logo" onClick={() => onNavigate("home")}>
-            🛍️ Capstone G1 Shop
+            <img className="logo-image" src="/favicon.png" alt="" />
+            <span>{t("common.shopName")}</span>
           </h1>
           <div className="header-actions">
             <ThemeToggle />
+            <LanguageSelector />
             {isAuthenticated ? (
               <>
                 <span className="user-greeting">
-                  Welcome, {user?.name || "User"}
+                  {t("nav.welcome", { name: user?.name || t("common.user") })}
                 </span>
                 <button
                   className="nav-button"
                   onClick={() => onNavigate("dashboard")}
                 >
-                  My Orders
+                  {t("nav.myOrders")}
                 </button>
                 <button
                   className="nav-button logout-btn"
                   onClick={handleLogout}
                 >
-                  Logout
+                  {t("nav.logout")}
                 </button>
               </>
             ) : (
@@ -45,38 +50,38 @@ const Header = ({ onNavigate }) => {
                   className="nav-button"
                   onClick={() => onNavigate("login")}
                 >
-                  Login
+                  {t("nav.login")}
                 </button>
                 <button
                   className="nav-button primary"
                   onClick={() => onNavigate("register")}
                 >
-                  Register
+                  {t("nav.register")}
                 </button>
               </>
             )}
             <button
               className="cart-button"
               onClick={() => onNavigate("cart")}
-              title="Go to Cart"
+              title={t("nav.goToCart")}
             >
-              🛒 Cart ({getTotalItems()})
+              🛒 {t("nav.cart", { count: getTotalItems() })}
             </button>
           </div>
         </div>
         <nav className="header-nav">
           <button className="nav-link" onClick={() => onNavigate("home")}>
-            Home
+            {t("nav.home")}
           </button>
           <button className="nav-link" onClick={() => onNavigate("products")}>
-            Products
+            {t("nav.products")}
           </button>
           {!isAuthenticated && (
             <button
               className="nav-link"
               onClick={() => onNavigate("track-order")}
             >
-              Track Order
+              {t("nav.trackOrder")}
             </button>
           )}
         </nav>

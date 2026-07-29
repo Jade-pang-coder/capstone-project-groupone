@@ -1,24 +1,28 @@
 import "./ProductCard.css";
+import { useTranslation } from "react-i18next";
+import { getLocalizedProduct } from "../i18n/catalog";
 import {
   PRODUCT_IMAGE_PLACEHOLDER,
   useProductImageFallback,
 } from "../utils/productImage";
 
 const ProductCard = ({ product, onViewDetails, onAddToCart }) => {
+  const { t } = useTranslation();
+  const localizedProduct = getLocalizedProduct(t, product);
   return (
     <div className="product-card">
       <div className="product-image">
         <img
           src={product.image_url || PRODUCT_IMAGE_PLACEHOLDER}
-          alt={product.name}
+          alt={localizedProduct.name}
           onError={useProductImageFallback}
         />
       </div>
       <div className="product-info">
-        <h3 className="product-name">{product.name}</h3>
-        <p className="product-sku">SKU: {product.sku}</p>
+        <h3 className="product-name">{localizedProduct.name}</h3>
+        <p className="product-sku">{t("common.sku")}: {product.sku}</p>
         <p className="product-description">
-          {product.description?.substring(0, 80)}...
+          {localizedProduct.description.substring(0, 80)}...
         </p>
         <div className="product-footer">
           <span className="product-price">${product.price?.toFixed(2)}</span>
@@ -27,13 +31,13 @@ const ProductCard = ({ product, onViewDetails, onAddToCart }) => {
               className="btn-secondary"
               onClick={() => onViewDetails(product.id)}
             >
-              View
+              {t("common.view")}
             </button>
             <button
               className="btn-primary"
               onClick={() => onAddToCart(product)}
             >
-              Add to Cart
+              {t("product.addToCart")}
             </button>
           </div>
         </div>

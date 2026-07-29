@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getLocalizedProduct } from "../i18n/catalog";
 import { createOrder } from "../api/orderApi";
 import { createOrderItem } from "../api/orderItemApi";
 import { getProductById } from "../api/productApi";
@@ -12,6 +14,7 @@ const CheckoutPage = ({ onNavigate }) => {
   const { cart, getTotalPrice, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     customer_name: user?.name || "",
     customer_email: user?.email || "",
@@ -32,7 +35,7 @@ const CheckoutPage = ({ onNavigate }) => {
     e.preventDefault();
 
     if (cart.length === 0) {
-      setError("Your cart is empty");
+      setError(t("cart.empty"));
       return;
     }
 
@@ -42,7 +45,7 @@ const CheckoutPage = ({ onNavigate }) => {
       !formData.shipping_address ||
       !formData.phone
     ) {
-      setError("Please fill in all required fields");
+      setError(t("checkout.required"));
       return;
     }
 
@@ -57,7 +60,7 @@ const CheckoutPage = ({ onNavigate }) => {
         checkoutUser = await getUserProfile(user.id, token);
         if (!checkoutUser?.email) {
           throw new Error(
-            "Your customer profile does not include an email address",
+            t("checkout.profileEmailMissing"),
           );
         }
       }
@@ -66,13 +69,13 @@ const CheckoutPage = ({ onNavigate }) => {
         cart.map(async (item) => {
           const productId = item.product_id || item.id;
           if (!productId) {
-            throw new Error("A cart item is missing its product ID");
+            throw new Error(t("checkout.productIdMissing"));
           }
 
           const product = await getProductById(productId);
           const quantity = Number(item.quantity);
           if (!Number.isInteger(quantity) || quantity < 1) {
-            throw new Error(`Invalid quantity for ${product.name}`);
+            throw new Error(t("checkout.invalidQuantity", { name: product.name }));
           }
 
           return {
@@ -114,7 +117,7 @@ const CheckoutPage = ({ onNavigate }) => {
 
       const response = await createOrder(orderData, token);
       if (!response?.id) {
-        throw new Error("The server created an invalid order response");
+        throw new Error(t("checkout.invalidResponse"));
       }
 
       for (const item of checkoutItems) {
@@ -123,7 +126,7 @@ const CheckoutPage = ({ onNavigate }) => {
       await clearCart();
       onNavigate(`order-confirmation/${response.id}`);
     } catch (err) {
-      setError(err.message || "Failed to create order");
+      setError(err.message || t("checkout.createFailed"));
       console.error("Error creating order:", err);
     } finally {
       setLoading(false);
@@ -134,12 +137,12 @@ const CheckoutPage = ({ onNavigate }) => {
     return (
       <div className="checkout-page">
         <div className="empty-cart">
-          <h2>Your cart is empty</h2>
+          <h2>{t("cart.empty")}</h2>
           <button
             className="btn-primary"
             onClick={() => onNavigate("products")}
           >
-            Continue Shopping
+            {t("cart.continueShopping")}
           </button>
         </div>
       </div>
@@ -149,15 +152,15 @@ const CheckoutPage = ({ onNavigate }) => {
   return (
     <div className="checkout-page">
       <div className="container">
-        <h2>Checkout</h2>
+        <h2>{t("checkout.title")}</h2>
 
         <div className="checkout-content">
           <div className="checkout-form-section">
             <form onSubmit={handleSubmitOrder} className="checkout-form">
               <div className="form-section">
-                <h3>Shipping Information</h3>
+                <h3>{t("checkout.shippingInfo")}</h3>
                 <div className="form-group">
-                  <label htmlFor="customer_name">Full Name *</label>
+                  <label htmlFor="customer_name">{t("checkout.fullNameRequired")}</label>
                   <input
                     id="customer_name"
                     type="text"
@@ -165,12 +168,12 @@ const CheckoutPage = ({ onNavigate }) => {
                     value={formData.customer_name}
                     onChange={handleInputChange}
                     required
-                    placeholder="Enter your full name"
+                    placeholder={t("auth.enterName")}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="customer_email">Email Address *</label>
+                  <label htmlFor="customer_email">{t("checkout.emailRequired")}</label>
                   <input
                     id="customer_email"
                     type="email"
@@ -180,25 +183,25 @@ const CheckoutPage = ({ onNavigate }) => {
                     required
                     readOnly={Boolean(user?.email)}
                     autoComplete="email"
-                    placeholder="Enter your email address"
+                    placeholder={t("checkout.enterEmail")}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="shipping_address">Address *</label>
+                  <label htmlFor="shipping_address">{t("checkout.addressRequired")}</label>
                   <textarea
                     id="shipping_address"
                     name="shipping_address"
                     value={formData.shipping_address}
                     onChange={handleInputChange}
                     required
-                    placeholder="Enter your shipping address"
+                    placeholder={t("checkout.enterAddress")}
                     rows="3"
                   ></textarea>
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="phone">Phone Number *</label>
+                  <label htmlFor="phone">{t("checkout.phoneRequired")}</label>
                   <input
                     id="phone"
                     type="tel"
@@ -206,13 +209,13 @@ const CheckoutPage = ({ onNavigate }) => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     required
-                    placeholder="Enter your phone number"
+                    placeholder={t("checkout.enterPhone")}
                   />
                 </div>
               </div>
 
               <div className="form-section">
-                <h3>Payment Method</h3>
+                <h3>{t("checkout.paymentMethod")}</h3>
                 <div className="form-group">
                   <label>
                     <input
@@ -222,7 +225,7 @@ const CheckoutPage = ({ onNavigate }) => {
                       checked={formData.payment_method === "credit_card"}
                       onChange={handleInputChange}
                     />
-                    Credit Card
+                    {t("checkout.creditCard")}
                   </label>
                 </div>
                 <div className="form-group">
@@ -234,7 +237,7 @@ const CheckoutPage = ({ onNavigate }) => {
                       checked={formData.payment_method === "debit_card"}
                       onChange={handleInputChange}
                     />
-                    Debit Card
+                    {t("checkout.debitCard")}
                   </label>
                 </div>
                 <div className="form-group">
@@ -246,7 +249,7 @@ const CheckoutPage = ({ onNavigate }) => {
                       checked={formData.payment_method === "paypal"}
                       onChange={handleInputChange}
                     />
-                    PayPal
+                    {t("checkout.paypal")}
                   </label>
                 </div>
               </div>
@@ -260,14 +263,14 @@ const CheckoutPage = ({ onNavigate }) => {
                   onClick={() => onNavigate("cart")}
                   disabled={loading}
                 >
-                  Back to Cart
+                  {t("checkout.backToCart")}
                 </button>
                 <button
                   type="submit"
                   className="btn-primary"
                   disabled={loading}
                 >
-                  {loading ? "Processing..." : "Place Order"}
+                  {loading ? t("checkout.processing") : t("checkout.placeOrder")}
                 </button>
               </div>
             </form>
@@ -275,12 +278,12 @@ const CheckoutPage = ({ onNavigate }) => {
 
           <aside className="checkout-summary">
             <div className="order-summary">
-              <h3>Order Summary</h3>
+              <h3>{t("cart.orderSummary")}</h3>
               <div className="summary-items">
                 {cart.map((item) => (
                   <div key={item.id} className="summary-item">
                     <span>
-                      {item.name} x {item.quantity}
+                      {getLocalizedProduct(t, item).name} x {item.quantity}
                     </span>
                     <span>
                       ${((item.price || 0) * item.quantity).toFixed(2)}
@@ -290,7 +293,7 @@ const CheckoutPage = ({ onNavigate }) => {
               </div>
               <div className="summary-divider"></div>
               <div className="summary-total">
-                <span>Total:</span>
+                <span>{t("common.total")}:</span>
                 <span>${getTotalPrice().toFixed(2)}</span>
               </div>
             </div>

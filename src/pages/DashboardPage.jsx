@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getLocalizedProduct } from "../i18n/catalog";
 import { getOrders, getOrderById } from "../api/orderApi";
 import { getOrderItemsByOrderId } from "../api/orderItemApi";
 import { useAuth } from "../context/AuthContext";
@@ -12,6 +14,7 @@ const DashboardPage = ({ onNavigate }) => {
   const [orderItems, setOrderItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     fetchOrders();
@@ -29,7 +32,7 @@ const DashboardPage = ({ onNavigate }) => {
       setSelectedOrder(null);
       setOrderItems([]);
     } catch (err) {
-      setError("Failed to load orders");
+      setError("dashboard.loadFailed");
       console.error("Error fetching orders:", err);
     } finally {
       setLoading(false);
@@ -43,7 +46,7 @@ const DashboardPage = ({ onNavigate }) => {
         String(order.user_id) === String(user?.id),
     );
     if (!ownedOrder) {
-      setError("You do not have permission to view this order");
+      setError("dashboard.permissionDenied");
       return;
     }
 
@@ -56,7 +59,7 @@ const DashboardPage = ({ onNavigate }) => {
       setOrderItems(itemsData);
     } catch (err) {
       console.error("Error fetching order details:", err);
-      setError("Failed to load order details");
+      setError("order.loadFailed");
     }
   };
 
@@ -65,24 +68,24 @@ const DashboardPage = ({ onNavigate }) => {
       <div className="dashboard-page">
         <div className="container">
           <div className="dashboard-header">
-            <h2>My Dashboard</h2>
-            <p>Welcome back, {user?.name}!</p>
+            <h2>{t("dashboard.title")}</h2>
+            <p>{t("dashboard.welcome", { name: user?.name })}</p>
           </div>
 
           <div className="dashboard-grid">
             <aside className="orders-list-section">
-              <h3>My Orders</h3>
-              {loading && <div className="loading">Loading orders...</div>}
-              {error && <div className="error-message">{error}</div>}
+              <h3>{t("dashboard.myOrders")}</h3>
+              {loading && <div className="loading">{t("dashboard.loading")}</div>}
+              {error && <div className="error-message">{t(error)}</div>}
 
               {orders.length === 0 ? (
                 <div className="no-orders">
-                  <p>You haven't placed any orders yet.</p>
+                  <p>{t("dashboard.noOrders")}</p>
                   <button
                     className="btn-primary"
                     onClick={() => onNavigate("products")}
                   >
-                    Start Shopping
+                    {t("dashboard.startShopping")}
                   </button>
                 </div>
               ) : (
@@ -106,7 +109,7 @@ const DashboardPage = ({ onNavigate }) => {
                       </div>
                       <div className="order-meta">
                         <span className="date">
-                          {new Date(order.created_at).toLocaleDateString()}
+                          {new Date(order.created_at).toLocaleDateString(i18n.language)}
                         </span>
                         <span className="price">
                           ${(order.total || 0).toFixed(2)}
@@ -121,53 +124,53 @@ const DashboardPage = ({ onNavigate }) => {
             <main className="order-details-section">
               {selectedOrder ? (
                 <div className="order-details">
-                  <h3>Order Details</h3>
+                  <h3>{t("order.details")}</h3>
                   <div className="details-card">
                     <div className="detail-row">
-                      <span className="label">Order Number:</span>
+                      <span className="label">{t("order.number")}:</span>
                       <span className="value">
                         #{selectedOrder.order_number || selectedOrder.id}
                       </span>
                     </div>
                     <div className="detail-row">
-                      <span className="label">Status:</span>
+                      <span className="label">{t("common.status")}:</span>
                       <span className={`value status ${selectedOrder.status}`}>
                         {selectedOrder.status.charAt(0).toUpperCase() +
                           selectedOrder.status.slice(1)}
                       </span>
                     </div>
                     <div className="detail-row">
-                      <span className="label">Date Placed:</span>
+                      <span className="label">{t("dashboard.datePlaced")}</span>
                       <span className="value">
                         {new Date(
                           selectedOrder.created_at,
-                        ).toLocaleDateString()}
+                        ).toLocaleDateString(i18n.language)}
                       </span>
                     </div>
                     <div className="detail-row">
-                      <span className="label">Shipping Address:</span>
+                      <span className="label">{t("dashboard.shippingAddress")}</span>
                       <span className="value">
                         {selectedOrder.shipping_address}
                       </span>
                     </div>
                   </div>
 
-                  <h4>Items Ordered</h4>
+                  <h4>{t("dashboard.itemsOrdered")}</h4>
                   {orderItems.length > 0 ? (
                     <table className="items-table">
                       <thead>
                         <tr>
-                          <th>Product</th>
-                          <th>SKU</th>
-                          <th>Qty</th>
-                          <th>Unit Price</th>
-                          <th>Total</th>
+                          <th>{t("common.product")}</th>
+                          <th>{t("common.sku")}</th>
+                          <th>{t("dashboard.qty")}</th>
+                          <th>{t("common.unitPrice")}</th>
+                          <th>{t("common.total")}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {orderItems.map((item) => (
                           <tr key={item.id}>
-                            <td>{item.product_name}</td>
+                            <td>{getLocalizedProduct(t, item).name}</td>
                             <td>{item.sku}</td>
                             <td>{item.quantity}</td>
                             <td>${(item.unit_price || 0).toFixed(2)}</td>
@@ -177,22 +180,22 @@ const DashboardPage = ({ onNavigate }) => {
                       </tbody>
                     </table>
                   ) : (
-                    <p>No items found for this order.</p>
+                    <p>{t("dashboard.noItems")}</p>
                   )}
 
                   <div className="order-total">
                     <div className="total-row">
-                      <span>Subtotal:</span>
+                      <span>{t("common.subtotal")}:</span>
                       <span>${(selectedOrder.subtotal || 0).toFixed(2)}</span>
                     </div>
                     <div className="total-row">
-                      <span>Discount:</span>
+                      <span>{t("common.discount")}:</span>
                       <span>
                         ${(selectedOrder.discount_amount || 0).toFixed(2)}
                       </span>
                     </div>
                     <div className="total-row final">
-                      <span>Total:</span>
+                      <span>{t("common.total")}:</span>
                       <span>${(selectedOrder.total || 0).toFixed(2)}</span>
                     </div>
                   </div>
@@ -201,12 +204,12 @@ const DashboardPage = ({ onNavigate }) => {
                     className="btn-secondary"
                     onClick={() => onNavigate("products")}
                   >
-                    Continue Shopping
+                    {t("cart.continueShopping")}
                   </button>
                 </div>
               ) : (
                 <div className="no-selection">
-                  <p>Select an order to view details</p>
+                  <p>{t("dashboard.selectOrder")}</p>
                 </div>
               )}
             </main>

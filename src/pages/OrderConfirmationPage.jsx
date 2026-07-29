@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getLocalizedProduct } from "../i18n/catalog";
 import { getOrderById } from "../api/orderApi";
 import { getOrderItemsByOrderId } from "../api/orderItemApi";
 import { useAuth } from "../context/AuthContext";
@@ -10,6 +12,7 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
   const [orderItems, setOrderItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     fetchOrderDetails();
@@ -25,20 +28,20 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
       const itemsData = await getOrderItemsByOrderId(orderId, token);
       setOrderItems(itemsData);
     } catch (err) {
-      setError("Failed to load order details");
+      setError("order.loadFailed");
       console.error("Error fetching order:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <div className="loading">Loading order details...</div>;
-  if (error) return <div className="error-message">{error}</div>;
-  if (!order) return <div className="error-message">Order not found</div>;
+  if (loading) return <div className="loading">{t("order.loading")}</div>;
+  if (error) return <div className="error-message">{t(error)}</div>;
+  if (!order) return <div className="error-message">{t("order.notFound")}</div>;
 
   const handleGuestOrderHistory = () => {
     const openTracking = window.confirm(
-      "Viewing all orders is available to members only. As a guest, use Track Order with your order number. Open Track Order now?",
+      t("order.guestConfirm"),
     );
     if (openTracking) {
       onNavigate(
@@ -52,35 +55,32 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
       <div className="container">
         <div className="success-message">
           <div className="success-icon">✓</div>
-          <h2>Order Confirmed!</h2>
-          <p>
-            Thank you for your purchase. Your order has been placed
-            successfully.
-          </p>
+          <h2>{t("order.confirmed")}</h2>
+          <p>{t("order.confirmedMessage")}</p>
         </div>
 
         <div className="order-info">
           <div className="info-card">
-            <h3>Order Number</h3>
+            <h3>{t("order.number")}</h3>
             <p className="order-number">#{order.order_number || order.id}</p>
           </div>
 
           <div className="info-card">
-            <h3>Order Status</h3>
+            <h3>{t("order.orderStatus")}</h3>
             <p className={`status ${order.status}`}>
               {order.status.toUpperCase()}
             </p>
           </div>
 
           <div className="info-card">
-            <h3>Order Date</h3>
-            <p>{new Date(order.created_at).toLocaleDateString()}</p>
+            <h3>{t("order.date")}</h3>
+            <p>{new Date(order.created_at).toLocaleDateString(i18n.language)}</p>
           </div>
         </div>
 
         <div className="order-details">
           <div className="section">
-            <h3>Shipping Information</h3>
+            <h3>{t("checkout.shippingInfo")}</h3>
             <div className="info">
               <p>
                 <strong>{order.customer_name}</strong>
@@ -91,21 +91,21 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
           </div>
 
           <div className="section">
-            <h3>Order Items</h3>
+            <h3>{t("order.items")}</h3>
             <table className="items-table">
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>SKU</th>
-                  <th>Quantity</th>
-                  <th>Unit Price</th>
-                  <th>Total</th>
+                  <th>{t("common.product")}</th>
+                  <th>{t("common.sku")}</th>
+                  <th>{t("common.quantity")}</th>
+                  <th>{t("common.unitPrice")}</th>
+                  <th>{t("common.total")}</th>
                 </tr>
               </thead>
               <tbody>
                 {orderItems.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.product_name}</td>
+                    <td>{getLocalizedProduct(t, item).name}</td>
                     <td>{item.sku}</td>
                     <td>{item.quantity}</td>
                     <td>${(item.unit_price || 0).toFixed(2)}</td>
@@ -118,15 +118,15 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
 
           <div className="section order-summary-section">
             <div className="summary-row">
-              <span>Subtotal:</span>
+              <span>{t("common.subtotal")}:</span>
               <span>${(order.subtotal || 0).toFixed(2)}</span>
             </div>
             <div className="summary-row">
-              <span>Discount:</span>
+              <span>{t("common.discount")}:</span>
               <span>-${(order.discount_amount || 0).toFixed(2)}</span>
             </div>
             <div className="summary-row total">
-              <span>Total:</span>
+              <span>{t("common.total")}:</span>
               <span>${(order.total || 0).toFixed(2)}</span>
             </div>
           </div>
@@ -138,7 +138,7 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
               className="btn-primary"
               onClick={() => onNavigate("dashboard")}
             >
-              View All Orders
+              {t("order.viewAll")}
             </button>
           )}
           {!isAuthenticated && (
@@ -147,7 +147,7 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
                 className="btn-secondary"
                 onClick={handleGuestOrderHistory}
               >
-                View All Orders
+                {t("order.viewAll")}
               </button>
               <button
                 className="btn-primary"
@@ -159,26 +159,28 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
                   )
                 }
               >
-                Track This Order
+                {t("order.trackThis")}
               </button>
             </>
           )}
           <button className="btn-secondary" onClick={() => onNavigate("home")}>
-            Continue Shopping
+            {t("cart.continueShopping")}
           </button>
         </div>
 
         <div className="email-confirmation">
           <p>
-            A confirmation email has been sent to{" "}
-            {order.customer_email || "the email address provided"}.
+            {t("order.emailSent", {
+              email: order.customer_email || t("order.providedEmail"),
+            })}
           </p>
           {isAuthenticated ? (
-            <p>You can track your order from your dashboard.</p>
+            <p>{t("order.dashboardTracking")}</p>
           ) : (
             <p>
-              Save order number #{order.order_number || order.id} for your
-              records.
+              {t("order.saveNumber", {
+                number: order.order_number || order.id,
+              })}
             </p>
           )}
         </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import "../pages/RegisterPage.css";
 
@@ -11,6 +12,7 @@ const RegisterPage = ({ onNavigate }) => {
     confirmPassword: "",
   });
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,17 +32,17 @@ const RegisterPage = ({ onNavigate }) => {
       !formData.password ||
       !formData.confirmPassword
     ) {
-      setError("Please fill in all fields");
+      setError(t("auth.fillAll"));
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("auth.passwordsMismatch"));
       return;
     }
 
     if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError(t("auth.passwordLength"));
       return;
     }
 
@@ -52,7 +54,7 @@ const RegisterPage = ({ onNavigate }) => {
       });
       onNavigate("home");
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError(err.message || t("auth.registrationFailed"));
     }
   };
 
@@ -60,43 +62,43 @@ const RegisterPage = ({ onNavigate }) => {
     <div className="register-page">
       <div className="register-container">
         <div className="register-card">
-          <h2>Create Account</h2>
+          <h2>{t("auth.createAccount")}</h2>
           <form onSubmit={handleSubmit} className="register-form">
             <div className="form-group">
-              <label htmlFor="name">Full Name</label>
+              <label htmlFor="name">{t("auth.fullName")}</label>
               <input
                 id="name"
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                placeholder="Enter your full name"
+                placeholder={t("auth.enterName")}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email Address</label>
+              <label htmlFor="email">{t("auth.email")}</label>
               <input
                 id="email"
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Enter your email"
+                placeholder={t("auth.enterEmail")}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t("auth.password")}</label>
               <input
                 id="password"
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="At least 8 characters"
+                placeholder={t("auth.passwordHint")}
                 autoComplete="new-password"
                 minLength="8"
                 required
@@ -104,14 +106,14 @@ const RegisterPage = ({ onNavigate }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
+              <label htmlFor="confirmPassword">{t("auth.confirmPassword")}</label>
               <input
                 id="confirmPassword"
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                placeholder="Enter the password again"
+                placeholder={t("auth.confirmPasswordHint")}
                 autoComplete="new-password"
                 minLength="8"
                 required
@@ -126,18 +128,18 @@ const RegisterPage = ({ onNavigate }) => {
               className="btn-primary btn-block"
               disabled={loading}
             >
-              {loading ? "Creating Account..." : "Register"}
+              {loading ? t("auth.creatingAccount") : t("auth.register")}
             </button>
           </form>
 
           <div className="register-footer">
             <p>
-              Already have an account?{" "}
+              {t("auth.hasAccount")}{" "}
               <button
                 className="link-button"
                 onClick={() => onNavigate("login")}
               >
-                Login here
+                {t("auth.loginHere")}
               </button>
             </p>
           </div>

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getLocalizedProduct } from "../i18n/catalog";
 import { getProducts } from "../api/productApi";
 import ProductCard from "../component/ProductCard";
 import CategoryMenu from "../component/CategoryMenu";
@@ -11,6 +13,7 @@ const HomePage = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { addToCart } = useCart();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchData();
@@ -23,7 +26,7 @@ const HomePage = ({ onNavigate }) => {
       const productsData = await getProducts();
       setProducts(productsData);
     } catch (err) {
-      setError("Failed to load data");
+      setError("home.loadFailed");
       console.error("Error fetching data:", err);
     } finally {
       setLoading(false);
@@ -37,9 +40,9 @@ const HomePage = ({ onNavigate }) => {
   const handleAddToCart = async (product) => {
     try {
       await addToCart(product, 1);
-      alert(`${product.name} added to cart!`);
+      alert(t("product.added", { name: getLocalizedProduct(t, product).name }));
     } catch {
-      alert("Failed to add to cart");
+      alert(t("product.addFailed"));
     }
   };
 
@@ -47,26 +50,26 @@ const HomePage = ({ onNavigate }) => {
     <div className="homepage">
       <section className="hero">
         <div className="hero-content">
-          <h2>Welcome to Capstone G1 Shop</h2>
-          <p>Discover amazing products at great prices</p>
+          <h2>{t("home.welcome")}</h2>
+          <p>{t("home.tagline")}</p>
           <div className="hero-actions">
             <button
               className="btn-primary"
               onClick={() => onNavigate("products")}
             >
-              Shop Now
+              {t("home.shopNow")}
             </button>
             <button
               className="btn-secondary"
               onClick={() => onNavigate("track-order")}
             >
-              Track Guest Order
+              {t("home.trackGuest")}
             </button>
           </div>
         </div>
       </section>
 
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className="error-message">{t(error)}</div>}
 
       <div className="home-content">
         <aside className="sidebar">
@@ -75,21 +78,21 @@ const HomePage = ({ onNavigate }) => {
 
         <main className="main-content">
           {loading ? (
-            <div className="loading">Loading products...</div>
+            <div className="loading">{t("product.loading")}</div>
           ) : (
             <>
               <h3>
-                {selectedCategory ? "Filtered Products" : "Featured Products"} (
+                {selectedCategory ? t("product.filtered") : t("product.featured")} (
                 {filteredProducts.length})
               </h3>
               {filteredProducts.length === 0 ? (
                 <div className="no-products">
-                  <p>No products found in this category.</p>
+                  <p>{t("product.noCategoryProducts")}</p>
                   <button
                     className="btn-secondary"
                     onClick={() => setSelectedCategory(null)}
                   >
-                    View All Products
+                    {t("product.viewAll")}
                   </button>
                 </div>
               ) : (

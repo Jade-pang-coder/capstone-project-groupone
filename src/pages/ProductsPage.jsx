@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getLocalizedProduct } from "../i18n/catalog";
 import { getProducts } from "../api/productApi";
 import ProductCard from "../component/ProductCard";
 import CategoryMenu from "../component/CategoryMenu";
@@ -13,6 +15,7 @@ const ProductsPage = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { addToCart } = useCart();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchProducts();
@@ -29,7 +32,7 @@ const ProductsPage = ({ onNavigate }) => {
       const data = await getProducts();
       setProducts(data);
     } catch (err) {
-      setError("Failed to load products");
+      setError("product.loadFailed");
       console.error("Error fetching products:", err);
     } finally {
       setLoading(false);
@@ -57,9 +60,9 @@ const ProductsPage = ({ onNavigate }) => {
   const handleAddToCart = async (product) => {
     try {
       await addToCart(product, 1);
-      alert(`${product.name} added to cart!`);
+      alert(t("product.added", { name: getLocalizedProduct(t, product).name }));
     } catch {
-      alert("Failed to add to cart");
+      alert(t("product.addFailed"));
     }
   };
 
@@ -72,11 +75,11 @@ const ProductsPage = ({ onNavigate }) => {
 
         <main className="main-content">
           <div className="products-header">
-            <h2>All Products</h2>
+            <h2>{t("category.all")}</h2>
             <div className="search-box">
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder={t("product.search")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input"
@@ -84,19 +87,19 @@ const ProductsPage = ({ onNavigate }) => {
             </div>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && <div className="error-message">{t(error)}</div>}
 
           {loading ? (
-            <div className="loading">Loading products...</div>
+            <div className="loading">{t("product.loading")}</div>
           ) : (
             <>
               <div className="products-info">
-                <p>{filteredProducts.length} product(s) found</p>
+                <p>{t("product.found", { count: filteredProducts.length })}</p>
               </div>
 
               {filteredProducts.length === 0 ? (
                 <div className="no-products">
-                  <p>No products found.</p>
+                  <p>{t("product.noProducts")}</p>
                   <button
                     className="btn-secondary"
                     onClick={() => {
@@ -104,7 +107,7 @@ const ProductsPage = ({ onNavigate }) => {
                       setSearchQuery("");
                     }}
                   >
-                    Clear Filters
+                    {t("product.clearFilters")}
                   </button>
                 </div>
               ) : (

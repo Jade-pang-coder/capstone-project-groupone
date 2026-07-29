@@ -1,29 +1,55 @@
-/* Language Selector Styles */
 .language-selector {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
+  gap: 6px;
+  min-height: 38px;
+  padding: 3px 5px 3px 9px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.06);
 }
 
-.language-selector label {
-  font-weight: 600;
-  color: #333;
+.language-selector__icon {
+  line-height: 1;
 }
 
 .language-select {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
+  width: auto;
+  max-width: 142px;
+  padding: 6px 24px 6px 4px;
+  border: 0;
+  border-radius: 7px;
+  background-color: transparent;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .language-select:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+  outline: 2px solid color-mix(in srgb, var(--primary-color) 45%, transparent);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+html.dark .language-selector {
+  background: rgba(30, 41, 59, 0.78);
+  border-color: rgba(148, 163, 184, 0.18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+html.dark .language-select {
+  color: #e2e8f0;
+}
+
+@media (max-width: 480px) {
+  .language-selector {
+    min-height: 36px;
+    padding-left: 7px;
+  }
+
+  .language-select {
+    max-width: 108px;
+    font-size: 12px;
+  }
 }

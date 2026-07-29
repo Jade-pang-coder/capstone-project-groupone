@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Header from "./component/Header";
 import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage";
@@ -13,6 +14,7 @@ import GuestOrderLookupPage from "./pages/GuestOrderLookupPage";
 import "./App.css";
 
 function App() {
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState("home");
 
   const handleNavigate = (page) => {
@@ -76,11 +78,11 @@ function App() {
       <main className="main-app">{renderPage()}</main>
       <footer className="footer">
         <div className="footer-content">
-          <p>&copy; 2026 Capstone G1 Shop. All rights reserved.</p>
+          <p>{t("footer.copyright")}</p>
           <div className="footer-links">
-            <a href="#privacy">Privacy Policy</a>
-            <a href="#terms">Terms of Service</a>
-            <a href="#contact">Contact Us</a>
+            <a href="#privacy">{t("footer.privacy")}</a>
+            <a href="#terms">{t("footer.terms")}</a>
+            <a href="#contact">{t("footer.contact")}</a>
           </div>
         </div>
       </footer>
