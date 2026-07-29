@@ -1,4 +1,5 @@
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 import "./ThemeToggle.css";
 
 const SunIcon = () => (
@@ -18,16 +19,20 @@ const MoonIcon = () => (
 
 const ThemeToggle = () => {
   const { isDark, toggleTheme } = useTheme();
+  const { t } = useTranslation();
   const nextTheme = isDark ? "light" : "dark";
+  const switchLabel = t("theme.switchTo", {
+    theme: t(`theme.${nextTheme}`),
+  });
 
   return (
     <button
       type="button"
       className="theme-toggle"
       onClick={toggleTheme}
-      aria-label={`Switch to ${nextTheme} mode`}
+      aria-label={switchLabel}
       aria-pressed={isDark}
-      title={`Switch to ${nextTheme} mode`}
+      title={switchLabel}
     >
       <span className="theme-toggle__glow" aria-hidden="true" />
       <span className="theme-toggle__track" aria-hidden="true">
@@ -47,7 +52,7 @@ const ThemeToggle = () => {
         </span>
       </span>
       <span className="sr-only">
-        {isDark ? "Dark mode enabled" : "Light mode enabled"}
+        {isDark ? t("theme.darkEnabled") : t("theme.lightEnabled")}
       </span>
     </button>
   );

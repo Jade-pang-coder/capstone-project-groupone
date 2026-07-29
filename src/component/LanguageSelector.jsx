@@ -1,33 +1,45 @@
-import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { languageStorageKey } from "../i18n";
 import "./LanguageSelector.css";
 
-const LanguageSelector = ({ onLanguageChange }) => {
-  const [language, setLanguage] = useState("en");
+const LanguageSelector = () => {
+  const { t, i18n } = useTranslation();
+  const languages = [
+    { code: "en", label: t("language.english") },
+    { code: "zh", label: t("language.chinese") },
+    { code: "ms", label: t("language.malay") },
+    { code: "ta", label: t("language.tamil") },
+  ];
 
-  const languages = {
-    en: "English",
-    es: "Español",
-    fr: "Français",
-    de: "Deutsch",
-  };
-
-  const handleLanguageChange = (lang) => {
-    setLanguage(lang);
-    onLanguageChange && onLanguageChange(lang);
+  const handleLanguageChange = async (event) => {
+    const language = event.target.value;
+    await i18n.changeLanguage(language);
+    try {
+      localStorage.setItem(languageStorageKey, language);
+    } catch {
+      // Language switching still works when storage is unavailable.
+    }
   };
 
   return (
     <div className="language-selector">
-      <label htmlFor="language">Language:</label>
+      <span className="language-selector__icon" aria-hidden="true">
+        🌐
+      </span>
+      <label className="sr-only" htmlFor="app-language">
+        {t("language.select")}
+      </label>
       <select
-        id="language"
-        value={language}
-        onChange={(e) => handleLanguageChange(e.target.value)}
+        id="app-language"
+        value={i18n.resolvedLanguage || "en"}
+        onChange={handleLanguageChange}
         className="language-select"
+        aria-label={t("language.select")}
+        title={t("language.select")}
       >
-        {Object.entries(languages).map(([code, name]) => (
+        {languages.map(({ code, label }) => (
           <option key={code} value={code}>
-            {name}
+            {label}
           </option>
         ))}
       </select>

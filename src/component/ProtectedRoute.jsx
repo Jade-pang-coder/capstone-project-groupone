@@ -1,13 +1,15 @@
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 const ProtectedRoute = ({ children, requiredRole = "user" }) => {
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
 
   if (!isAuthenticated) {
     return (
       <div className="protected-route-error">
-        <h2>Access Denied</h2>
-        <p>Please log in to access this page.</p>
+        <h2>{t("auth.accessDenied")}</h2>
+        <p>{t("auth.loginRequired")}</p>
       </div>
     );
   }
@@ -15,8 +17,8 @@ const ProtectedRoute = ({ children, requiredRole = "user" }) => {
   if (requiredRole === "admin" && user?.role !== "admin") {
     return (
       <div className="protected-route-error">
-        <h2>Access Denied</h2>
-        <p>You do not have permission to access this page.</p>
+        <h2>{t("auth.accessDenied")}</h2>
+        <p>{t("auth.permissionDenied")}</p>
       </div>
     );
   }

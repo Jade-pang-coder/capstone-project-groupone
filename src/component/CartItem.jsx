@@ -1,4 +1,6 @@
 import { useCart } from "../context/CartContent";
+import { useTranslation } from "react-i18next";
+import { getLocalizedProduct } from "../i18n/catalog";
 import "./CartItem.css";
 import {
   PRODUCT_IMAGE_PLACEHOLDER,
@@ -7,6 +9,8 @@ import {
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   const { updateCart, removeFromCart } = useCart();
+  const { t } = useTranslation();
+  const localizedItem = getLocalizedProduct(t, item);
 
   const handleQuantityChange = async (newQuantity) => {
     try {
@@ -35,13 +39,13 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
       <div className="item-image">
         <img
           src={item.image_url || PRODUCT_IMAGE_PLACEHOLDER}
-          alt={item.name || item.product_name}
+          alt={localizedItem.name}
           onError={useProductImageFallback}
         />
       </div>
       <div className="item-details">
-        <h4>{item.name || item.product_name}</h4>
-        <p className="item-sku">SKU: {item.sku}</p>
+        <h4>{localizedItem.name}</h4>
+        <p className="item-sku">{t("common.sku")}: {item.sku}</p>
         <p className="item-price">${(item.price || 0).toFixed(2)}</p>
       </div>
       <div className="item-quantity">
@@ -72,7 +76,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
         <p className="total-price">${Number(itemTotal).toFixed(2)}</p>
       </div>
       <button className="btn-remove" onClick={handleRemove}>
-        Remove
+        {t("common.remove")}
       </button>
     </div>
   );

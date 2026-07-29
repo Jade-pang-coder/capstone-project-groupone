@@ -19,6 +19,9 @@
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-size: 24px;
   font-weight: bold;
   color: #007bff;
@@ -26,6 +29,15 @@
   background: none;
   border: none;
   padding: 0;
+}
+
+.logo-image {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  object-fit: cover;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.14);
 }
 
 .logo:hover {
@@ -155,6 +167,12 @@
   .logo {
     margin-bottom: 0;
     font-size: 21px;
+  }
+
+  .logo-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
   }
 
   .nav-button,

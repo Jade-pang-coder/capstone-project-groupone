@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getProductById } from "../api/productApi";
+import {
+  getLocalizedCategoryName,
+  getLocalizedProduct,
+} from "../i18n/catalog";
 import { useCart } from "../context/CartContent";
 import "../pages/ProductDetailsPage.css";
 import {
@@ -13,6 +18,8 @@ const ProductDetailsPage = ({ productId, onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { addToCart } = useCart();
+  const { t, i18n } = useTranslation();
+  const localizedProduct = getLocalizedProduct(t, product);
 
   useEffect(() => {
     fetchProductDetails();
@@ -25,7 +32,7 @@ const ProductDetailsPage = ({ productId, onNavigate }) => {
       const data = await getProductById(productId);
       setProduct(data);
     } catch (err) {
-      setError("Failed to load product details");
+      setError("product.detailsLoadFailed");
       console.error("Error fetching product:", err);
     } finally {
       setLoading(false);
@@ -36,41 +43,41 @@ const ProductDetailsPage = ({ productId, onNavigate }) => {
     try {
       if (product) {
         await addToCart(product, quantity);
-        alert(`${product.name} added to cart!`);
+        alert(t("product.added", { name: localizedProduct.name }));
         setQuantity(1);
       }
     } catch {
-      alert("Failed to add to cart");
+      alert(t("product.addFailed"));
     }
   };
 
-  if (loading) return <div className="loading">Loading product details...</div>;
-  if (error) return <div className="error-message">{error}</div>;
-  if (!product) return <div className="error-message">Product not found</div>;
+  if (loading) return <div className="loading">{t("product.detailsLoading")}</div>;
+  if (error) return <div className="error-message">{t(error)}</div>;
+  if (!product) return <div className="error-message">{t("product.notFound")}</div>;
 
   return (
     <div className="product-details-page">
       <button className="btn-back" onClick={() => onNavigate("products")}>
-        ← Back to Products
+        {t("product.back")}
       </button>
 
       <div className="product-details">
         <div className="product-image-section">
           <img
             src={product.image_url || PRODUCT_IMAGE_PLACEHOLDER}
-            alt={product.name}
+            alt={localizedProduct.name}
             className="product-image-large"
             onError={useProductImageFallback}
           />
         </div>
 
         <div className="product-info-section">
-          <h1>{product.name}</h1>
-          <p className="product-sku">SKU: {product.sku}</p>
+          <h1>{localizedProduct.name}</h1>
+          <p className="product-sku">{t("common.sku")}: {product.sku}</p>
 
           <div className="product-rating">
             <span className="rating">★★★★★ (4.5/5)</span>
-            <span className="reviews">(128 reviews)</span>
+            <span className="reviews">{t("product.reviews", { count: 128 })}</span>
           </div>
 
           <div className="product-price-section">
@@ -78,18 +85,18 @@ const ProductDetailsPage = ({ productId, onNavigate }) => {
             <span
               className={`availability ${product.is_active ? "in-stock" : "out-of-stock"}`}
             >
-              {product.is_active ? "✓ In Stock" : "✗ Out of Stock"}
+              {product.is_active ? t("product.inStock") : t("product.outOfStock")}
             </span>
           </div>
 
           <div className="product-description">
-            <h3>Description</h3>
-            <p>{product.description}</p>
+            <h3>{t("product.description")}</h3>
+            <p>{localizedProduct.description}</p>
           </div>
 
           <div className="product-purchase">
             <div className="quantity-selector">
-              <label htmlFor="quantity">Quantity:</label>
+              <label htmlFor="quantity">{t("common.quantity")}:</label>
               <div className="quantity-input">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -116,25 +123,27 @@ const ProductDetailsPage = ({ productId, onNavigate }) => {
                 onClick={handleAddToCart}
                 disabled={!product.is_active}
               >
-                Add to Cart
+                {t("product.addToCart")}
               </button>
               <button
                 className="btn-secondary"
                 onClick={() => onNavigate("cart")}
               >
-                View Cart
+                {t("product.viewCart")}
               </button>
             </div>
           </div>
 
           <div className="product-meta">
             <p>
-              <strong>Category:</strong>{" "}
-              {product.category_name || "Uncategorized"}
+              <strong>{t("product.category")}</strong>{" "}
+              {product.category_name
+                ? getLocalizedCategoryName(t, { name: product.category_name })
+                : t("common.uncategorized")}
             </p>
             <p>
-              <strong>Added:</strong>{" "}
-              {new Date(product.created_at).toLocaleDateString()}
+              <strong>{t("product.addedDate")}</strong>{" "}
+              {new Date(product.created_at).toLocaleDateString(i18n.language)}
             </p>
           </div>
         </div>

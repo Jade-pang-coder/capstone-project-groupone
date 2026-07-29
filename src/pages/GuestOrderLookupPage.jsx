@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getLocalizedProduct } from "../i18n/catalog";
 import { getOrders } from "../api/orderApi";
 import { getOrderItemsByOrderId } from "../api/orderItemApi";
 import "./OrderConfirmationPage.css";
@@ -9,12 +11,13 @@ const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
   const [orderItems, setOrderItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   const handleLookup = async (event) => {
     event.preventDefault();
     const normalizedCode = orderCode.trim().toUpperCase();
     if (!normalizedCode) {
-      setError("Enter your order number");
+      setError(t("tracking.required"));
       return;
     }
 
@@ -33,14 +36,14 @@ const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
       );
 
       if (!matchingOrder) {
-        throw new Error("No order was found with that order number");
+        throw new Error(t("tracking.notFound"));
       }
 
       const items = await getOrderItemsByOrderId(matchingOrder.id);
       setOrder(matchingOrder);
       setOrderItems(items);
     } catch (lookupError) {
-      setError(lookupError.message || "Unable to retrieve the order");
+      setError(lookupError.message || t("tracking.retrieveFailed"));
     } finally {
       setLoading(false);
     }
@@ -50,23 +53,23 @@ const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
     <div className="order-confirmation-page">
       <div className="container">
         <div className="section">
-          <h2>Track Guest Order</h2>
-          <p>Enter the order number shown on your checkout confirmation.</p>
+          <h2>{t("tracking.title")}</h2>
+          <p>{t("tracking.instructions")}</p>
           <form onSubmit={handleLookup} className="checkout-form">
             <div className="form-group">
-              <label htmlFor="guest-order-code">Order Number</label>
+              <label htmlFor="guest-order-code">{t("order.number")}</label>
               <input
                 id="guest-order-code"
                 value={orderCode}
                 onChange={(event) => setOrderCode(event.target.value)}
-                placeholder="Example: ORD-2026-005"
+                placeholder={t("tracking.placeholder")}
                 autoComplete="off"
                 required
               />
             </div>
             {error && <div className="error-message">{error}</div>}
             <button className="btn-primary" type="submit" disabled={loading}>
-              {loading ? "Finding Order..." : "View Order"}
+              {loading ? t("tracking.finding") : t("tracking.viewOrder")}
             </button>
           </form>
         </div>
@@ -75,23 +78,23 @@ const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
           <div className="order-details">
             <div className="order-info">
               <div className="info-card">
-                <h3>Order Number</h3>
+                <h3>{t("order.number")}</h3>
                 <p className="order-number">
                   #{order.order_number || order.id}
                 </p>
               </div>
               <div className="info-card">
-                <h3>Status</h3>
+                <h3>{t("common.status")}</h3>
                 <p className={`status ${order.status}`}>{order.status}</p>
               </div>
               <div className="info-card">
-                <h3>Total</h3>
+                <h3>{t("common.total")}</h3>
                 <p>${order.total.toFixed(2)}</p>
               </div>
             </div>
 
             <div className="section">
-              <h3>Shipping Information</h3>
+              <h3>{t("checkout.shippingInfo")}</h3>
               <p>
                 <strong>{order.customer_name}</strong>
               </p>
@@ -99,21 +102,21 @@ const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
             </div>
 
             <div className="section">
-              <h3>Order Items</h3>
+              <h3>{t("order.items")}</h3>
               {orderItems.length ? (
                 <table className="items-table">
                   <thead>
                     <tr>
-                      <th>Product</th>
-                      <th>SKU</th>
-                      <th>Quantity</th>
-                      <th>Total</th>
+                      <th>{t("common.product")}</th>
+                      <th>{t("common.sku")}</th>
+                      <th>{t("common.quantity")}</th>
+                      <th>{t("common.total")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {orderItems.map((item) => (
                       <tr key={item.id}>
-                        <td>{item.product_name}</td>
+                        <td>{getLocalizedProduct(t, item).name}</td>
                         <td>{item.sku}</td>
                         <td>{item.quantity}</td>
                         <td>${item.line_total.toFixed(2)}</td>
@@ -122,7 +125,7 @@ const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
                   </tbody>
                 </table>
               ) : (
-                <p>No items were found for this order.</p>
+                <p>{t("order.noItems")}</p>
               )}
             </div>
 
@@ -130,7 +133,7 @@ const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
               className="btn-secondary"
               onClick={() => onNavigate("products")}
             >
-              Continue Shopping
+              {t("cart.continueShopping")}
             </button>
           </div>
         )}

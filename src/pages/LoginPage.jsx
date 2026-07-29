@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import "../pages/LoginPage.css";
 
@@ -9,6 +10,7 @@ const LoginPage = ({ onNavigate }) => {
     password: "",
   });
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,12 +25,12 @@ const LoginPage = ({ onNavigate }) => {
     setError(null);
 
     if (!formData.email || !formData.password) {
-      setError("Please enter your email and password");
+      setError(t("auth.emailPasswordRequired"));
       return;
     }
 
     if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError(t("auth.passwordLength"));
       return;
     }
 
@@ -36,7 +38,7 @@ const LoginPage = ({ onNavigate }) => {
       await login(formData.email, formData.password);
       onNavigate("home");
     } catch (err) {
-      setError(err.message || "Login failed");
+      setError(err.message || t("auth.loginFailed"));
     }
   };
 
@@ -44,30 +46,30 @@ const LoginPage = ({ onNavigate }) => {
     <div className="login-page">
       <div className="login-container">
         <div className="login-card">
-          <h2>Login</h2>
+          <h2>{t("auth.login")}</h2>
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="email">Email Address</label>
+              <label htmlFor="email">{t("auth.email")}</label>
               <input
                 id="email"
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Enter your email"
+                placeholder={t("auth.enterEmail")}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t("auth.password")}</label>
               <input
                 id="password"
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="Enter your password"
+                placeholder={t("auth.enterPassword")}
                 autoComplete="current-password"
                 minLength="8"
                 required
@@ -75,7 +77,7 @@ const LoginPage = ({ onNavigate }) => {
             </div>
 
             <p className="auth-note">
-              Password verification requires backend authentication support.
+              {t("auth.authNote")}
             </p>
 
             {error && <div className="error-message">{error}</div>}
@@ -86,18 +88,18 @@ const LoginPage = ({ onNavigate }) => {
               className="btn-primary btn-block"
               disabled={loading}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? t("auth.loggingIn") : t("auth.login")}
             </button>
           </form>
 
           <div className="login-footer">
             <p>
-              Don't have an account?{" "}
+              {t("auth.noAccount")}{" "}
               <button
                 className="link-button"
                 onClick={() => onNavigate("register")}
               >
-                Register here
+                {t("auth.registerHere")}
               </button>
             </p>
           </div>
