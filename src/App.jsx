@@ -76,7 +76,7 @@ function App() {
       <main className="main-app">{renderPage()}</main>
       <footer className="footer">
         <div className="footer-content">
-          <p>&copy; 2026 E-Shop. All rights reserved.</p>
+          <p>&copy; 2026 Capstone G1 Shop. All rights reserved.</p>
           <div className="footer-links">
             <a href="#privacy">Privacy Policy</a>
             <a href="#terms">Terms of Service</a>

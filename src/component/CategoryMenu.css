@@ -40,3 +40,41 @@
   color: #dc3545;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .category-menu {
+    padding: 13px;
+    border-radius: 12px;
+  }
+
+  .category-menu h3 {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+
+  .category-list {
+    flex-direction: row;
+    gap: 8px;
+    margin: 0;
+    padding: 1px 1px 7px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .category-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-item {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    font-size: 12px;
+    white-space: nowrap;
+    scroll-snap-align: start;
+  }
+}

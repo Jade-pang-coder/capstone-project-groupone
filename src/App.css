@@ -117,10 +117,13 @@ select:focus {
 
 /* Footer */
 .footer {
-  background-color: #333;
-  color: white;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), #f4f7fb);
+  color: #475569;
   padding: 30px 0;
-  margin-top: 50px;
+  margin-top: 0;
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -12px 35px rgba(15, 23, 42, 0.035);
 }
 
 .footer-content {
@@ -138,13 +141,13 @@ select:focus {
 }
 
 .footer-links a {
-  color: #bbb;
+  color: #64748b;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .footer-links a:hover {
-  color: white;
+  color: #007bff;
 }
 
 /* Responsive */
@@ -156,5 +159,29 @@ select:focus {
   button {
     padding: 8px 16px;
     font-size: 14px;
+  }
+
+  .footer {
+    padding: 24px 0 calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .footer-content {
+    padding-inline: 16px;
+  }
+
+  .footer-content p {
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+
+  .footer-links {
+    margin-top: 0;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+  }
+
+  .footer-links a {
+    padding: 6px 2px;
+    font-size: 13px;
   }
 }

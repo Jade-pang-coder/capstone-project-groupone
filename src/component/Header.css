@@ -113,25 +113,80 @@
 
 @media (max-width: 768px) {
   .header .container {
-    padding: 14px 12px;
+    padding: 10px 12px 8px;
   }
 
   .header-top {
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 9px;
+    margin-bottom: 9px;
   }
 
   .header-actions {
     width: 100%;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   .header-nav {
-    flex-wrap: wrap;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
     justify-content: center;
-    gap: 16px;
-    padding-top: 12px;
+    gap: 3px;
+    padding: 5px;
+    border: 0;
+    border-radius: 999px;
+    background: #f4f6f8;
+  }
+
+  .header-nav button {
+    min-height: 34px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+
+  .header-nav button:hover {
+    background: white;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  }
+
+  .logo {
+    margin-bottom: 0;
+    font-size: 21px;
+  }
+
+  .nav-button,
+  .cart-button {
+    min-height: 36px;
+    padding: 7px 11px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  html.dark .header-nav {
+    background: rgba(30, 41, 59, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  html.dark .header-nav button:hover {
+    background: rgba(51, 65, 85, 0.8);
+  }
+}
+
+@media (max-width: 390px) {
+  .header .container {
+    padding-inline: 8px;
+  }
+
+  .header-actions {
+    gap: 4px;
+  }
+
+  .nav-button,
+  .cart-button {
+    padding-inline: 8px;
+    font-size: 12px;
   }
 }
