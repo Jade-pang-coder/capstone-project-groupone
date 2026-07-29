@@ -47,7 +47,7 @@ const HomePage = ({ onNavigate }) => {
     <div className="homepage">
       <section className="hero">
         <div className="hero-content">
-          <h2>Welcome to E-Shop</h2>
+          <h2>Welcome to Capstone G1 Shop</h2>
           <p>Discover amazing products at great prices</p>
           <div className="hero-actions">
             <button

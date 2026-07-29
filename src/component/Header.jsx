@@ -1,5 +1,6 @@
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContent";
+import ThemeToggle from "./ThemeToggle";
 import "./Header.css";
 
 const Header = ({ onNavigate }) => {
@@ -16,9 +17,10 @@ const Header = ({ onNavigate }) => {
       <div className="container">
         <div className="header-top">
           <h1 className="logo" onClick={() => onNavigate("home")}>
-            🛍️ E-Shop
+            🛍️ Capstone G1 Shop
           </h1>
           <div className="header-actions">
+            <ThemeToggle />
             {isAuthenticated ? (
               <>
                 <span className="user-greeting">

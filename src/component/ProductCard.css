@@ -76,6 +76,8 @@
   font-size: 18px;
   font-weight: bold;
   color: #28a745;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .product-actions {
@@ -114,4 +116,73 @@
 
 .btn-primary:hover {
   background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .product-card {
+    border-radius: 12px;
+  }
+
+  .product-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .product-image {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .product-info {
+    padding: 13px;
+  }
+
+  .product-name {
+    font-size: 15px;
+  }
+
+  .product-description {
+    font-size: 13px;
+  }
+
+  .product-footer {
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  .product-price {
+    font-size: 16px;
+  }
+
+  .product-actions {
+    gap: 6px;
+  }
+
+  .product-actions button {
+    min-height: 34px;
+    padding: 7px 9px;
+  }
+}
+
+@media (max-width: 430px) {
+  .product-image {
+    aspect-ratio: 16 / 10;
+  }
+
+  .product-name {
+    font-size: 17px;
+  }
+
+  .product-actions button {
+    min-height: 38px;
+    padding-inline: 11px;
+  }
+
+  .product-footer {
+    flex-wrap: wrap;
+  }
+
+  .product-price {
+    margin-right: auto;
+    font-size: 17px;
+  }
 }
