@@ -186,6 +186,173 @@
   color: #004085;
 }
 
+/* Order confirmation dark theme */
+html.dark .order-confirmation-page {
+  background:
+    radial-gradient(
+      circle at 14% 5%,
+      rgba(37, 99, 235, 0.12),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 86% 22%,
+      rgba(34, 197, 94, 0.07),
+      transparent 34rem
+    ),
+    linear-gradient(145deg, #070b13, #0a101c 52%, #070c16);
+}
+
+html.dark .order-confirmation-page .success-message {
+  border-color: rgba(74, 222, 128, 0.28);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20, 83, 45, 0.68),
+      rgba(13, 52, 35, 0.58)
+    );
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(187, 247, 208, 0.08);
+}
+
+html.dark .order-confirmation-page .success-icon {
+  color: #86efac;
+}
+
+html.dark .order-confirmation-page .success-message h2 {
+  color: #dcfce7;
+}
+
+html.dark .order-confirmation-page .success-message p {
+  color: #bbf7d0;
+}
+
+html.dark .order-confirmation-page .info-card,
+html.dark .order-confirmation-page .order-details {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background:
+    linear-gradient(
+      150deg,
+      rgba(17, 25, 40, 0.98),
+      rgba(10, 16, 28, 0.96)
+    );
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.27),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html.dark .order-confirmation-page .info-card h3 {
+  color: #94a3b8;
+}
+
+html.dark .order-confirmation-page .info-card p {
+  color: #e2e8f0;
+}
+
+html.dark .order-confirmation-page .info-card .order-number {
+  color: #60a5fa;
+}
+
+html.dark .order-confirmation-page .status.pending {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+}
+
+html.dark .order-confirmation-page .status.shipped {
+  color: #a5f3fc;
+  background: rgba(8, 145, 178, 0.18);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+}
+
+html.dark .order-confirmation-page .status.delivered {
+  color: #bbf7d0;
+  background: rgba(22, 163, 74, 0.18);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+html.dark .order-confirmation-page .order-details .section {
+  background: transparent;
+  border-color: rgba(148, 163, 184, 0.18);
+  box-shadow: none;
+}
+
+html.dark .order-confirmation-page .section h3 {
+  color: #f1f5f9;
+}
+
+html.dark .order-confirmation-page .info,
+html.dark .order-confirmation-page .info p {
+  color: #a8b3c4;
+}
+
+html.dark .order-confirmation-page .info strong {
+  color: #f1f5f9;
+}
+
+html.dark .order-confirmation-page .items-table th {
+  color: #cbd5e1;
+  background: rgba(30, 41, 59, 0.88);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+html.dark .order-confirmation-page .items-table td {
+  color: #a8b3c4;
+  border-color: rgba(148, 163, 184, 0.16);
+}
+
+html.dark .order-confirmation-page .items-table tr:hover {
+  background: rgba(30, 41, 59, 0.55);
+}
+
+html.dark .order-confirmation-page .order-summary-section {
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  background: rgba(7, 12, 22, 0.58);
+}
+
+html.dark .order-confirmation-page .summary-row {
+  color: #a8b3c4;
+}
+
+html.dark .order-confirmation-page .summary-row span:last-child {
+  color: #e2e8f0;
+}
+
+html.dark .order-confirmation-page .summary-row.total {
+  color: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.24);
+}
+
+html.dark .order-confirmation-page .summary-row.total span {
+  color: #f8fafc;
+}
+
+html.dark .order-confirmation-page .action-buttons .btn-secondary {
+  color: #e2e8f0;
+  background: #334155;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+html.dark .order-confirmation-page .action-buttons .btn-secondary:hover {
+  background: #475569;
+}
+
+html.dark .order-confirmation-page .email-confirmation {
+  color: #bfdbfe;
+  border-color: rgba(96, 165, 250, 0.25);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(30, 64, 175, 0.25),
+      rgba(15, 35, 70, 0.48)
+    );
+  box-shadow: inset 0 1px 0 rgba(191, 219, 254, 0.05);
+}
+
+html.dark .order-confirmation-page .email-confirmation p {
+  color: #bfdbfe;
+}
+
 @media (max-width: 768px) {
   .order-info {
     grid-template-columns: 1fr;
