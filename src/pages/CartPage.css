@@ -199,8 +199,22 @@ html.dark .promo-input {
 }
 
 @media (max-width: 768px) {
+  .cart-page {
+    padding: 24px 0 36px;
+  }
+
+  .cart-page > .container {
+    padding-inline: 14px;
+  }
+
+  .cart-page h2 {
+    margin-bottom: 18px;
+    font-size: 24px;
+  }
+
   .cart-content {
     grid-template-columns: 1fr;
+    gap: 18px;
   }
 
   .cart-summary {
@@ -211,7 +225,33 @@ html.dark .promo-input {
     display: none;
   }
 
+  .cart-items-section {
+    overflow: visible;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .cart-items {
+    padding: 0;
+  }
+
+  .summary-card,
+  .promo-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
   html.dark .cart-page {
     padding-inline: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .cart-page > .container {
+    padding-inline: 10px;
+  }
+
+  .cart-items-section {
+    padding: 8px;
   }
 }
