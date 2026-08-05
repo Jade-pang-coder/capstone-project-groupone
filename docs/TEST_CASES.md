@@ -339,11 +339,25 @@ characters.
 
 **Priority:** Critical  
 **Precondition:** The customer is logged out.  
-**Steps:** Attempt to display the dashboard through the application state or
-developer tools.
+**Steps:** Attempt to display the dashboard through the application state or developer tools.
 
-**Expected:** ProtectedRoute displays an access restriction instead of order
-data.
+**Expected:** ProtectedRoute displays an access restriction instead of order data.
+
+### TC-AUTH-011 — Successful JWT login
+
+**Priority:** Critical
+
+**Steps:** Register a new user, then log in via the `/login` endpoint with the correct email and password.
+
+**Expected:** The response includes a JWT token, which is stored in `localStorage`, and protected pages become accessible.
+
+### TC-AUTH-012 — Token expiration handling
+
+**Priority:** High
+
+**Steps:** Log in to obtain a token, manually modify the stored token to an expired value (or wait for expiry), then attempt to access a protected page.
+
+**Expected:** The application detects the invalid token, clears it, redirects to the login page, and displays an “session expired” message.
 
 ## 9. Cart
 

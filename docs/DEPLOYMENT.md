@@ -12,7 +12,7 @@ service and is not built or deployed from this repository.
 | Build command | `npm run build` |
 | Build output | `dist` |
 | Required runtime secrets | None in the current implementation |
-| Current API | `https://capstone-project-backend-delta.vercel.app/api` |
+| Current API | `https://capstone-project-backend-delta.vercel.app/api` (JWT authentication enabled) |
 
 Vite produces static assets in `dist/`, so the frontend can be hosted by Vercel
 or any static web server.

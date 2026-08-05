@@ -9,6 +9,22 @@ The frontend currently connects to the hosted REST API at:
 
 `https://capstone-project-backend-delta.vercel.app/api`
 
+### TC-AUTH-011 — Successful JWT login
+
+**Priority:** Critical
+
+**Steps:** Register a new user, then log in via the `/login` endpoint with the correct email and password.
+
+**Expected:** The response includes a JWT token, which is stored in localStorage, and protected pages become accessible.
+
+### TC-AUTH-012 — Token expiration handling
+
+**Priority:** High
+
+**Steps:** Log in to obtain a token, manually modify the stored token to an expired value (or wait for expiry), then attempt to access a protected page.
+
+**Expected:** The application detects the invalid token, clears it, redirects to the login page, and displays an “session expired” message.
+
 ## Features
 
 - Browse products and filter them by category
@@ -66,8 +82,27 @@ The Node.js requirement comes from the version of Vite used by this project.
 4. Open the local URL printed by Vite, normally
    `http://localhost:5173`.
 
-No `.env` file is required in the current version because the backend URL is
-defined directly in each file under `src/api/`.
+## 6. Using a Different Backend
+
+The repository can read the API URL from an environment variable. Create a `.env` file in the project root (or `.env.production` for production builds) with:
+
+```env
+VITE_API_BASE_URL=https://your-backend.example.com/api
+```
+
+Vite automatically injects any variable prefixed with `VITE_` into the client bundle. Update the code to use `import.meta.env.VITE_API_BASE_URL` instead of the hard‑coded `API_BASE_URL`.
+
+Search and replace all definitions:
+
+```bash
+rg 'const API_BASE_URL' src/api
+```
+
+Then run the usual lint, build, preview, and smoke‑test steps. Because Vite bundles these values at build time, changing the URL requires a new frontend build and deployment.
+
+### Deploying with JWT Authentication
+
+Ensure the backend is configured to issue JWTs at the `/login` endpoint and that the frontend expects the `Authorization: Bearer <token>` header. No additional client changes are required beyond the environment variable configuration.
 
 ## Available Commands
 
@@ -108,6 +143,10 @@ defined directly in each file under `src/api/`.
 library. The page components call the API modules, which communicate with the
 separately deployed backend.
 
+## Authentication Overview
+
+The backend now provides a `/login` endpoint that returns a JWT token upon successful authentication. The frontend stores this token in `localStorage` and includes it as a `Bearer` token in the `Authorization` header for all protected API calls. Registration creates a user record and automatically logs in the new user, receiving a JWT token in the same way. Logout clears the stored token.
+
 The backend resources used by this frontend are:
 
 - `/products`
@@ -138,20 +177,12 @@ Add a translation by creating its resource file, registering it in
 
 ## Current Limitations
 
-- The API base URL is hard-coded in every API module. Changing backends requires
-  updating the `API_BASE_URL` constants and rebuilding the frontend.
-- The backend does not currently expose a login endpoint. Registration stores a
-  password hash in the current browser, and login can only verify an account
-  registered on that same browser/device.
-- Generated customer tokens are frontend identifiers rather than proof of
-  server-authenticated sessions.
-- Checkout displays payment-method choices but does not collect card details,
-  contact a payment gateway, or process a real payment.
-- Guest order lookup fetches orders and filters them in the browser. Production
-  systems should expose a restricted lookup endpoint instead of returning all
-  orders.
+- The API base URL is hard‑coded in every API module. Changing backends requires updating the `API_BASE_URL` constants and rebuilding the frontend.
+- Generated customer tokens are JWTs stored in the browser, but they are not verified server‑side in this demo implementation.
+- Checkout displays payment‑method choices but does not collect card details, contact a payment gateway, or process a real payment.
+- Guest order lookup fetches orders and filters them in the browser. Production systems should expose a restricted lookup endpoint instead of returning all orders.
 - Navigation is held in memory. Refreshing the browser returns to the home page.
-- Automated unit and end-to-end test scripts have not been configured.
+- Automated unit and end‑to‑end test scripts have not been configured.
 
 These limitations make the current application appropriate for a capstone or
 demonstration environment. Implement server-side authentication, authorization,
