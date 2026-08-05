@@ -22,6 +22,15 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
     setLoading(true);
     setError(null);
     try {
+      if (!token) {
+        const saved = JSON.parse(localStorage.getItem("eshop:guest:last_order") || "null");
+        if (saved && String(saved.order?.id) === String(orderId)) {
+          setOrder(saved.order);
+          setOrderItems(saved.items || []);
+          return;
+        }
+        throw new Error("Guest order details are not available in this browser");
+      }
       const orderData = await getOrderById(orderId, token);
       setOrder(orderData);
 
@@ -103,13 +112,13 @@ const OrderConfirmationPage = ({ orderId, onNavigate }) => {
                 </tr>
               </thead>
               <tbody>
-                {orderItems.map((item) => (
-                  <tr key={item.id}>
+                {orderItems.map((item, index) => (
+                  <tr key={item.id || `${item.product_id}-${index}`}>
                     <td>{getLocalizedProduct(t, item).name}</td>
                     <td>{item.sku}</td>
                     <td>{item.quantity}</td>
-                    <td>${(item.unit_price || 0).toFixed(2)}</td>
-                    <td>${(item.line_total || 0).toFixed(2)}</td>
+                    <td>${Number(item.unit_price || 0).toFixed(2)}</td>
+                    <td>${Number(item.line_total ?? item.subtotal ?? 0).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>

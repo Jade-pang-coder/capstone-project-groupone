@@ -1,34 +1,29 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { login, register, getUserProfile } from "../api/authApi";
+import { createContext, useContext, useState } from "react";
+import { login, register } from "../api/authApi";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user")) || null;
+    } catch {
+      return null;
+    }
+  });
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    // Fetch user profile if token exists
-    if (token) {
-      fetchUserProfile();
-    }
-  }, [token]);
-
-  const fetchUserProfile = async () => {
-    try {
-      const userId = localStorage.getItem("userId");
-      if (userId && token) {
-        const userData = await getUserProfile(userId, token);
-        setUser(userData);
-      }
-    } catch (err) {
-      console.error("Error fetching user profile:", err);
-      setError("Failed to fetch user profile");
-      // Clear invalid token
-      logout();
-    }
+  const storeSession = (newToken, userData) => {
+    localStorage.removeItem("eshop:guest:session_token");
+    localStorage.removeItem("eshop:guest:cart_id");
+    localStorage.removeItem("cart");
+    setToken(newToken);
+    setUser(userData);
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("userId", userData.id);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
   const handleLogin = async (email, password) => {
@@ -38,10 +33,7 @@ export const AuthProvider = ({ children }) => {
       const response = await login(email, password);
       const { token: newToken, user: userData } = response;
 
-      setToken(newToken);
-      setUser(userData);
-      localStorage.setItem("token", newToken);
-      localStorage.setItem("userId", userData.id);
+      storeSession(newToken, userData);
 
       return userData;
     } catch (err) {
@@ -59,10 +51,7 @@ export const AuthProvider = ({ children }) => {
       const response = await register(userData);
       const { token: newToken, user: registeredUser } = response;
 
-      setToken(newToken);
-      setUser(registeredUser);
-      localStorage.setItem("token", newToken);
-      localStorage.setItem("userId", registeredUser.id);
+      storeSession(newToken, registeredUser);
 
       return registeredUser;
     } catch (err) {
@@ -78,6 +67,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    localStorage.removeItem("user");
     setError(null);
   };
 
@@ -89,7 +79,7 @@ export const AuthProvider = ({ children }) => {
     login: handleLogin,
     register: handleRegister,
     logout,
-    isAuthenticated: !!token,
+    isAuthenticated: !!token && !!user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
