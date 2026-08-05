@@ -17,7 +17,8 @@ export const getCarts = async (token) => {
     if (!response.ok) {
       throw new Error("Failed to fetch carts");
     }
-    return await response.json();
+    const data = await response.json();
+    return data.cart || data;
   } catch (error) {
     console.error("Error fetching carts:", error);
     throw error;
@@ -52,7 +53,8 @@ export const createCart = async (cartData, token) => {
     if (!response.ok) {
       throw new Error("Failed to create cart");
     }
-    return await response.json();
+    const data = await response.json();
+    return data.cart || data;
   } catch (error) {
     console.error("Error creating cart:", error);
     throw error;

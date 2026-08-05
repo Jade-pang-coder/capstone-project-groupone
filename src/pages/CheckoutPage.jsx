@@ -123,6 +123,35 @@ const CheckoutPage = ({ onNavigate }) => {
       for (const item of checkoutItems) {
         await createOrderItem({ ...item, order_id: response.id }, token);
       }
+      if (!token) {
+        const guestRecord = {
+          order: response,
+          items: checkoutItems.map((item, index) => ({
+            ...item,
+            id: `guest-order-item-${response.id}-${index}`,
+            order_id: response.id,
+            product_name: item.product_title,
+            line_total: Number(item.subtotal),
+          })),
+        };
+        localStorage.setItem(
+          "eshop:guest:last_order",
+          JSON.stringify(guestRecord),
+        );
+        let guestOrders = [];
+        try {
+          guestOrders = JSON.parse(localStorage.getItem("eshop:guest:orders") || "[]");
+        } catch {
+          guestOrders = [];
+        }
+        localStorage.setItem(
+          "eshop:guest:orders",
+          JSON.stringify([
+            guestRecord,
+            ...guestOrders.filter(({ order }) => String(order?.id) !== String(response.id)),
+          ].slice(0, 20)),
+        );
+      }
       await clearCart();
       onNavigate(`order-confirmation/${response.id}`);
     } catch (err) {

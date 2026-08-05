@@ -129,6 +129,12 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
+      if (!token || !user) {
+        setCartId(null);
+        const saved = localStorage.getItem("cart");
+        setCart(saved ? JSON.parse(saved) : []);
+        return;
+      }
       const resolvedCartId = await resolveCartId();
       setCartId(resolvedCartId);
       const items = await getCartItems(token, resolvedCartId);
@@ -151,6 +157,31 @@ export const CartProvider = ({ children }) => {
   // ── Add to cart ───────────────────────────────────────────────────────────
   const addToCart = async (product, quantity = 1) => {
     try {
+      if (!token || !user) {
+        getOrCreateGuestToken();
+        setCart((prev) => {
+          const existing = prev.find(
+            (item) => String(item.product_id || item.id) === String(product.id),
+          );
+          if (existing) {
+            return prev.map((item) =>
+              item === existing
+                ? { ...item, quantity: Number(item.quantity) + Number(quantity) }
+                : item,
+            );
+          }
+          return [
+            ...prev,
+            {
+              ...product,
+              id: `guest-${product.id}`,
+              product_id: product.id,
+              quantity: Number(quantity) || 1,
+            },
+          ];
+        });
+        return;
+      }
       const resolvedCartId = cartId ?? await resolveCartId();
       if (!cartId) setCartId(resolvedCartId);
 
@@ -199,6 +230,17 @@ export const CartProvider = ({ children }) => {
   // ── Update cart item quantity ─────────────────────────────────────────────
   const updateCart = async (itemOrId, quantity) => {
     try {
+      if (!token || !user) {
+        const targetId = typeof itemOrId === "object" ? itemOrId.id : itemOrId;
+        setCart((prev) =>
+          prev.map((item) =>
+            String(item.id) === String(targetId)
+              ? { ...item, quantity: Number(quantity) || 1 }
+              : item,
+          ),
+        );
+        return;
+      }
       const itemId = await resolveCartItemId(itemOrId);
       await updateCartItem(itemId, { quantity }, token);
       setCart((prev) =>
@@ -220,6 +262,11 @@ export const CartProvider = ({ children }) => {
   // ── Remove cart item ──────────────────────────────────────────────────────
   const removeFromCart = async (itemOrId) => {
     try {
+      if (!token || !user) {
+        const targetId = typeof itemOrId === "object" ? itemOrId.id : itemOrId;
+        setCart((prev) => prev.filter((item) => String(item.id) !== String(targetId)));
+        return;
+      }
       const itemId = await resolveCartItemId(itemOrId);
       await removeCartItem(itemId, token);
       setCart((prev) =>
@@ -241,6 +288,12 @@ export const CartProvider = ({ children }) => {
 
   // ── Clear cart ────────────────────────────────────────────────────────────
   const clearCart = async () => {
+    if (!token || !user) {
+      setCart([]);
+      localStorage.removeItem("cart");
+      localStorage.removeItem(GUEST_SESSION_KEY);
+      return;
+    }
     const resolvedCartId = cartId ?? await resolveCartId();
     const serverItems = await getCartItems(token, resolvedCartId);
     const results = await Promise.allSettled(

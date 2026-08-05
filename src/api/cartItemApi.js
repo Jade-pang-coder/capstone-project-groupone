@@ -72,7 +72,8 @@ export const addCartItem = async (cartItemData, token) => {
       headers: buildHeaders(token),
       body: JSON.stringify(cartItemData),
     });
-    return await readResponse(response, "Failed to add cart item");
+    const data = await readResponse(response, "Failed to add cart item");
+    return data.cart_item || data;
   } catch (error) {
     console.error("Error adding cart item:", error);
     throw error;
@@ -88,7 +89,8 @@ export const updateCartItem = async (cartItemId, cartItemData, token) => {
       headers: buildHeaders(token),
       body: JSON.stringify(cartItemData),
     });
-    return await readResponse(response, "Failed to update cart item");
+    const data = await readResponse(response, "Failed to update cart item");
+    return data.cart_item || data;
   } catch (error) {
     console.error("Error updating cart item:", error);
     throw error;

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getLocalizedProduct } from "../i18n/catalog";
-import { getOrders } from "../api/orderApi";
-import { getOrderItemsByOrderId } from "../api/orderItemApi";
 import "./OrderConfirmationPage.css";
 
 const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
@@ -27,21 +25,29 @@ const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
     setOrderItems([]);
 
     try {
-      const orders = await getOrders();
-      const matchingOrder = orders.find(
-        (candidate) =>
-          candidate.customer_type === "Guest" &&
-          (candidate.order_code?.toUpperCase() === normalizedCode ||
-            candidate.order_number?.toUpperCase() === normalizedCode),
+      let savedOrders = [];
+      try {
+        savedOrders = JSON.parse(localStorage.getItem("eshop:guest:orders") || "[]");
+        const legacyOrder = JSON.parse(
+          localStorage.getItem("eshop:guest:last_order") || "null",
+        );
+        if (legacyOrder) savedOrders.push(legacyOrder);
+      } catch {
+        savedOrders = [];
+      }
+
+      const matchingRecord = savedOrders.find(
+        ({ order: candidate }) =>
+          candidate?.order_code?.toUpperCase() === normalizedCode ||
+          candidate?.order_number?.toUpperCase() === normalizedCode,
       );
 
-      if (!matchingOrder) {
+      if (!matchingRecord) {
         throw new Error(t("tracking.notFound"));
       }
 
-      const items = await getOrderItemsByOrderId(matchingOrder.id);
-      setOrder(matchingOrder);
-      setOrderItems(items);
+      setOrder(matchingRecord.order);
+      setOrderItems(matchingRecord.items || []);
     } catch (lookupError) {
       setError(lookupError.message || t("tracking.retrieveFailed"));
     } finally {
@@ -114,12 +120,12 @@ const GuestOrderLookupPage = ({ initialOrderCode = "", onNavigate }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {orderItems.map((item) => (
-                      <tr key={item.id}>
+                    {orderItems.map((item, index) => (
+                      <tr key={item.id || `${item.product_id}-${index}`}>
                         <td>{getLocalizedProduct(t, item).name}</td>
                         <td>{item.sku}</td>
                         <td>{item.quantity}</td>
-                        <td>${item.line_total.toFixed(2)}</td>
+                        <td>${Number(item.line_total ?? item.subtotal ?? 0).toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>

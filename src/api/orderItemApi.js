@@ -68,7 +68,7 @@ export const createOrderItem = async (orderItemData, token) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({
       order_id: orderItemData.order_id,
@@ -81,7 +81,6 @@ export const createOrderItem = async (orderItemData, token) => {
     }),
   });
 
-  return normalizeOrderItem(
-    await readResponse(response, "Failed to create order item"),
-  );
+  const data = await readResponse(response, "Failed to create order item");
+  return normalizeOrderItem(data.order_item || data);
 };
