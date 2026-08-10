@@ -4,28 +4,28 @@
   min-height: calc(100vh - 200px);
 }
 
-.dashboard-header {
+.dashboard-page .dashboard-header {
   margin-bottom: 40px;
 }
 
-.dashboard-header h2 {
+.dashboard-page .dashboard-header h2 {
   font-size: 32px;
   color: #333;
   margin-bottom: 10px;
 }
 
-.dashboard-header p {
+.dashboard-page .dashboard-header p {
   color: #666;
   font-size: 16px;
 }
 
-.dashboard-grid {
+.dashboard-page .dashboard-grid {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
   gap: 30px;
 }
 
-.orders-list-section {
+.dashboard-page .orders-list-section {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
@@ -35,51 +35,57 @@
   top: 100px;
 }
 
-.orders-list-section h3 {
+.dashboard-page .orders-list-section h3 {
   margin-bottom: 20px;
   font-size: 18px;
   color: #333;
 }
 
-.orders-list {
+.dashboard-page .orders-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.order-item {
+.dashboard-page .order-item {
   padding: 15px;
   border: 1px solid #eee;
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
   background-color: #f9f9f9;
+  min-width: 0;
 }
 
-.order-item:hover {
+.dashboard-page .order-item:hover {
   border-color: #007bff;
   background-color: #f0f8ff;
 }
 
-.order-item.active {
+.dashboard-page .order-item.active {
   background-color: #e7f3ff;
   border-color: #007bff;
   font-weight: 600;
 }
 
-.order-summary {
+.dashboard-page .order-summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
   margin-bottom: 10px;
+  background: transparent;
+  box-shadow: none;
 }
 
-.order-id {
+.dashboard-page .order-id {
   font-weight: 600;
   color: #333;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
-.status {
+.dashboard-page .status {
   padding: 4px 8px;
   border-radius: 3px;
   font-size: 12px;
@@ -88,88 +94,101 @@
   letter-spacing: 0.5px;
 }
 
-.status.pending {
+.dashboard-page .status.pending {
   background-color: #fff3cd;
   color: #856404;
 }
 
-.status.shipped {
+.dashboard-page .status.shipped {
   background-color: #d1ecf1;
   color: #0c5460;
 }
 
-.status.delivered {
+.dashboard-page .status.delivered {
   background-color: #d4edda;
   color: #155724;
 }
 
-.order-meta {
+.dashboard-page .order-meta {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
   font-size: 13px;
   color: #666;
 }
 
-.date {
+.dashboard-page .date {
   color: #999;
 }
 
-.price {
+.dashboard-page .order-meta .price {
   font-weight: 600;
+  font-size: 13px;
   color: #28a745;
+  white-space: nowrap;
 }
 
-.order-details-section {
+.dashboard-page .order-details-section {
   background-color: white;
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 0;
 }
 
-.order-details h3 {
+.dashboard-page .order-details h3 {
   font-size: 22px;
   margin-bottom: 20px;
   color: #333;
 }
 
-.details-card {
+.dashboard-page .details-card {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 5px;
   margin-bottom: 30px;
 }
 
-.detail-row {
+.dashboard-page .detail-row {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
   padding: 10px 0;
   border-bottom: 1px solid #eee;
   color: #666;
 }
 
-.detail-row:last-child {
+.dashboard-page .detail-row .value {
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-page .detail-row:last-child {
   border-bottom: none;
 }
 
-.label {
+.dashboard-page .label {
   font-weight: 600;
   color: #333;
 }
 
-.order-details h4 {
+.dashboard-page .order-details h4 {
   font-size: 16px;
   margin-bottom: 15px;
   margin-top: 20px;
   color: #333;
 }
 
-.items-table {
+.dashboard-page .items-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
-.items-table th {
+.dashboard-page .items-table th {
   background-color: #f0f0f0;
   padding: 12px;
   text-align: left;
@@ -178,27 +197,27 @@
   border-bottom: 2px solid #ddd;
 }
 
-.items-table td {
+.dashboard-page .items-table td {
   padding: 12px;
   border-bottom: 1px solid #eee;
   color: #666;
 }
 
-.order-total {
+.dashboard-page .order-total {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 5px;
   margin-bottom: 20px;
 }
 
-.total-row {
+.dashboard-page .total-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
   color: #666;
 }
 
-.total-row.final {
+.dashboard-page .total-row.final {
   font-weight: bold;
   font-size: 18px;
   color: #333;
@@ -206,41 +225,135 @@
   border-top: 1px solid #ddd;
 }
 
-.order-details button {
+.dashboard-page .order-details button {
   margin-top: 20px;
 }
 
-.no-orders,
-.no-selection {
+.dashboard-page .no-orders,
+.dashboard-page .no-selection {
   text-align: center;
   padding: 40px 20px;
   color: #666;
 }
 
-.no-orders p,
-.no-selection p {
+.dashboard-page .no-orders p,
+.dashboard-page .no-selection p {
   margin-bottom: 20px;
 }
 
+/* Keep dashboard surfaces and text legible in dark mode. These more specific
+   rules also prevent similarly named components on other pages leaking in. */
+html.dark .dashboard-page .orders-list-section,
+html.dark .dashboard-page .order-details-section,
+html.dark .dashboard-page .details-card {
+  background-color: var(--surface-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+html.dark .dashboard-page .order-item {
+  background-color: var(--surface-muted);
+  border-color: var(--border-color);
+}
+
+html.dark .dashboard-page .order-item:hover {
+  background-color: #1e2c42;
+  border-color: var(--primary-color);
+}
+
+html.dark .dashboard-page .order-item.active {
+  background-color: #172b46;
+  border-color: var(--primary-color);
+}
+
+html.dark .dashboard-page .order-summary {
+  background: transparent;
+  box-shadow: none;
+}
+
+html.dark .dashboard-page :where(.order-id, h2, h3, h4, .label) {
+  color: var(--text-primary);
+}
+
+html.dark .dashboard-page :where(
+    .dashboard-header p,
+    .order-meta,
+    .date,
+    .detail-row,
+    .items-table td,
+    .total-row,
+    .no-orders,
+    .no-selection
+  ) {
+  color: var(--text-secondary);
+}
+
+html.dark .dashboard-page .detail-row,
+html.dark .dashboard-page .items-table th,
+html.dark .dashboard-page .items-table td,
+html.dark .dashboard-page .total-row.final {
+  border-color: var(--border-color);
+}
+
+html.dark .dashboard-page .items-table th {
+  background-color: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+html.dark .dashboard-page .items-table tr:hover {
+  background-color: #16243a;
+}
+
+html.dark .dashboard-page .order-total {
+  background-color: var(--surface-muted);
+}
+
+html.dark .dashboard-page .total-row.final {
+  color: var(--text-primary);
+}
+
 @media (max-width: 768px) {
-  .dashboard-grid {
+  .dashboard-page .dashboard-grid {
     grid-template-columns: 1fr;
   }
 
-  .orders-list-section {
+  .dashboard-page .orders-list-section {
     position: static;
   }
 
-  .order-details-section {
+  .dashboard-page .order-details-section {
     padding: 20px;
   }
 
-  .items-table {
+  .dashboard-page .items-table {
+    display: block;
+    overflow-x: auto;
     font-size: 14px;
   }
 
-  .items-table th,
-  .items-table td {
+  .dashboard-page .items-table th,
+  .dashboard-page .items-table td {
     padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-page {
+    padding: 20px 0;
+  }
+
+  .dashboard-page .orders-list-section,
+  .dashboard-page .order-details-section {
+    padding: 16px;
+  }
+
+  .dashboard-page .order-summary,
+  .dashboard-page .order-meta,
+  .dashboard-page .detail-row {
+    align-items: flex-start;
+  }
+
+  .dashboard-page .detail-row {
+    gap: 12px;
   }
 }
