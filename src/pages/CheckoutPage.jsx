@@ -5,7 +5,6 @@ import { createOrder } from "../api/orderApi";
 import { createOrderItem } from "../api/orderItemApi";
 import { getProductById } from "../api/productApi";
 import { useAuth } from "../context/AuthContext";
-import { getUserProfile } from "../api/authApi";
 import { useCart } from "../context/CartContent";
 import "../pages/CheckoutPage.css";
 
@@ -54,10 +53,9 @@ const CheckoutPage = ({ onNavigate }) => {
 
     try {
       const isRegisteredCustomer = Boolean(user?.id && token);
-      let checkoutUser = user;
+      const checkoutUser = user;
 
       if (isRegisteredCustomer) {
-        checkoutUser = await getUserProfile(user.id, token);
         if (!checkoutUser?.email) {
           throw new Error(
             t("checkout.profileEmailMissing"),
