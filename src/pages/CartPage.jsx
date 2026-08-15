@@ -1,11 +1,20 @@
 import CartItem from "../component/CartItem";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../context/CartContent";
+import { useAuth } from "../context/AuthContext";
 import "../pages/CartPage.css";
 
 const CartPage = ({ onNavigate }) => {
   const { cart, getTotalPrice } = useCart();
+  const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
+  const subtotal = getTotalPrice();
+  const discountPercentage = isAuthenticated
+    ? Math.min(100, Math.max(0, Number(user?.discount_percentage) || 0))
+    : 0;
+  const discountAmount = subtotal * (discountPercentage / 100);
+  const total = subtotal - discountAmount;
+  const membershipTier = user?.membership_tier || user?.membership_status || "Member";
 
   const handleCheckout = () => {
     if (cart.length === 0) {
@@ -55,8 +64,16 @@ const CartPage = ({ onNavigate }) => {
                 <div className="summary-details">
                   <div className="summary-row">
                     <span>{t("common.subtotal")}:</span>
-                    <span>${getTotalPrice().toFixed(2)}</span>
+                    <span>${subtotal.toFixed(2)}</span>
                   </div>
+                  {discountPercentage > 0 && (
+                    <div className="summary-row discount">
+                      <span>
+                        {membershipTier} {t("common.discount")} ({discountPercentage}%):
+                      </span>
+                      <span>-${discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="summary-row">
                     <span>{t("common.shipping")}:</span>
                     <span>$0.00</span>
@@ -68,7 +85,7 @@ const CartPage = ({ onNavigate }) => {
                   <div className="summary-divider"></div>
                   <div className="summary-row total">
                     <span>{t("common.total")}:</span>
-                    <span>${getTotalPrice().toFixed(2)}</span>
+                    <span>${total.toFixed(2)}</span>
                   </div>
                 </div>
                 <button

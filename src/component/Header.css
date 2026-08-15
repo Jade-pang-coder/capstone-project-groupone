@@ -89,6 +89,51 @@
   font-size: 14px;
 }
 
+.member-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.member-benefits {
+  display: flex;
+  gap: 5px;
+}
+
+.membership-badge,
+.discount-badge {
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.membership-badge {
+  color: #075985;
+  background: #e0f2fe;
+}
+
+.discount-badge {
+  color: #166534;
+  background: #dcfce7;
+}
+
+html.dark .user-greeting {
+  color: #cbd5e1;
+}
+
+html.dark .membership-badge {
+  color: #bae6fd;
+  background: rgba(3, 105, 161, 0.35);
+}
+
+html.dark .discount-badge {
+  color: #bbf7d0;
+  background: rgba(21, 128, 61, 0.35);
+}
+
 .cart-button {
   background-color: #28a745;
   color: white;
@@ -138,6 +183,11 @@
     width: 100%;
     justify-content: center;
     gap: 6px;
+  }
+
+  .member-summary {
+    width: 100%;
+    align-items: center;
   }
 
   .header-nav {

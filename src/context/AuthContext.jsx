@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { login, register } from "../api/authApi";
+import { getUserProfile, login, register } from "../api/authApi";
 
 const AuthContext = createContext();
 
@@ -26,6 +26,16 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(userData));
   };
 
+  const loadCompleteProfile = async (newToken, userData) => {
+    if (!userData?.id) return userData;
+    try {
+      return await getUserProfile(userData.id, newToken);
+    } catch (profileError) {
+      console.warn("Could not refresh the member profile after login:", profileError);
+      return userData;
+    }
+  };
+
   const handleLogin = async (email, password) => {
     setLoading(true);
     setError(null);
@@ -33,9 +43,10 @@ export const AuthProvider = ({ children }) => {
       const response = await login(email, password);
       const { token: newToken, user: userData } = response;
 
-      storeSession(newToken, userData);
+      const completeUser = await loadCompleteProfile(newToken, userData);
+      storeSession(newToken, completeUser);
 
-      return userData;
+      return completeUser;
     } catch (err) {
       setError(err.message || "Login failed");
       throw err;
@@ -51,9 +62,10 @@ export const AuthProvider = ({ children }) => {
       const response = await register(userData);
       const { token: newToken, user: registeredUser } = response;
 
-      storeSession(newToken, registeredUser);
+      const completeUser = await loadCompleteProfile(newToken, registeredUser);
+      storeSession(newToken, completeUser);
 
-      return registeredUser;
+      return completeUser;
     } catch (err) {
       setError(err.message || "Registration failed");
       throw err;
@@ -68,6 +80,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("user");
+    localStorage.removeItem("cart");
+    localStorage.removeItem("eshop:guest:cart");
+    localStorage.removeItem("eshop:guest:session_token");
+    localStorage.removeItem("eshop:guest:cart_id");
     setError(null);
   };
 

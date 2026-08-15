@@ -9,6 +9,11 @@ const Header = ({ onNavigate }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const { getTotalItems } = useCart();
   const { t } = useTranslation();
+  const membershipTier = user?.membership_tier || user?.membership_status || "Regular";
+  const discountPercentage = Math.max(
+    0,
+    Number(user?.discount_percentage ?? user?.discount ?? 0) || 0,
+  );
 
   const handleLogout = () => {
     logout();
@@ -28,9 +33,17 @@ const Header = ({ onNavigate }) => {
             <LanguageSelector />
             {isAuthenticated ? (
               <>
-                <span className="user-greeting">
-                  {t("nav.welcome", { name: user?.name || t("common.user") })}
-                </span>
+                <div className="member-summary">
+                  <span className="user-greeting">
+                    {t("nav.welcome", { name: user?.name || t("common.user") })}
+                  </span>
+                  <span className="member-benefits">
+                    <span className="membership-badge">{membershipTier}</span>
+                    <span className="discount-badge">
+                      {discountPercentage}% {t("common.discount")}
+                    </span>
+                  </span>
+                </div>
                 <button
                   className="nav-button"
                   onClick={() => onNavigate("dashboard")}
