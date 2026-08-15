@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useAuth } from "./AuthContext";
 import {
   getCartItems,
@@ -13,6 +13,7 @@ const CartContext = createContext();
 
 // ── Guest session token ──────────────────────────────────────────────────────
 const GUEST_SESSION_KEY = "eshop:guest:session_token";
+const GUEST_CART_KEY = "eshop:guest:cart";
 
 const getOrCreateGuestToken = () => {
   let token = localStorage.getItem(GUEST_SESSION_KEY);
@@ -29,6 +30,9 @@ export const CartProvider = ({ children }) => {
   const [cartId, setCartId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const activeOwnerRef = useRef(null);
+  const cartOwnerRef = useRef(null);
+  const ownerKey = token && user?.id ? `user:${user.id}` : "guest";
 
   // ── Resolve the server cart ID (authenticated users) ──────────────────────
   const resolveAuthCartId = async () => {
@@ -116,41 +120,55 @@ export const CartProvider = ({ children }) => {
 
   // ── Fetch cart from server on auth change ─────────────────────────────────
   useEffect(() => {
-    fetchCart();
+    const previousOwner = activeOwnerRef.current;
+    activeOwnerRef.current = ownerKey;
+    cartOwnerRef.current = null;
+    setCart([]);
+    setCartId(null);
+
+    if (previousOwner !== null && previousOwner !== ownerKey) {
+      localStorage.removeItem(GUEST_CART_KEY);
+      localStorage.removeItem("cart");
+    }
+
+    fetchCart(ownerKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, user]);
+  }, [ownerKey]);
 
   // ── Persist local cart to localStorage ────────────────────────────────────
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+    if (ownerKey === "guest" && cartOwnerRef.current === ownerKey) {
+      localStorage.setItem(GUEST_CART_KEY, JSON.stringify(cart));
+    }
+  }, [cart, ownerKey]);
 
-  const fetchCart = async () => {
+  const fetchCart = async (expectedOwner = ownerKey) => {
     setLoading(true);
     setError(null);
     try {
       if (!token || !user) {
-        setCartId(null);
-        const saved = localStorage.getItem("cart");
+        const saved = localStorage.getItem(GUEST_CART_KEY);
+        if (activeOwnerRef.current !== expectedOwner) return;
+        cartOwnerRef.current = expectedOwner;
         setCart(saved ? JSON.parse(saved) : []);
         return;
       }
       const resolvedCartId = await resolveCartId();
+      if (activeOwnerRef.current !== expectedOwner) return;
       setCartId(resolvedCartId);
       const items = await getCartItems(token, resolvedCartId);
-      setCart(await Promise.all(items.map(hydrateCartItem)));
+      const hydratedItems = await Promise.all(items.map(hydrateCartItem));
+      if (activeOwnerRef.current !== expectedOwner) return;
+      cartOwnerRef.current = expectedOwner;
+      setCart(hydratedItems);
     } catch (err) {
+      if (activeOwnerRef.current !== expectedOwner) return;
       setError("Failed to fetch cart");
       console.error("Error fetching cart:", err);
-      // Fall back to any locally cached cart
-      try {
-        const saved = localStorage.getItem("cart");
-        if (saved) setCart(JSON.parse(saved));
-      } catch {
-        // Ignore malformed cached data; the empty cart remains usable.
-      }
+      cartOwnerRef.current = expectedOwner;
+      setCart([]);
     } finally {
-      setLoading(false);
+      if (activeOwnerRef.current === expectedOwner) setLoading(false);
     }
   };
 
@@ -159,6 +177,7 @@ export const CartProvider = ({ children }) => {
     try {
       if (!token || !user) {
         getOrCreateGuestToken();
+        cartOwnerRef.current = ownerKey;
         setCart((prev) => {
           const existing = prev.find(
             (item) => String(item.product_id || item.id) === String(product.id),
@@ -290,6 +309,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = async () => {
     if (!token || !user) {
       setCart([]);
+      localStorage.removeItem(GUEST_CART_KEY);
       localStorage.removeItem("cart");
       localStorage.removeItem(GUEST_SESSION_KEY);
       return;

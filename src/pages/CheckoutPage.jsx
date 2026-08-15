@@ -14,6 +14,14 @@ const CheckoutPage = ({ onNavigate }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { t } = useTranslation();
+  const displayedSubtotal = getTotalPrice();
+  const membershipDiscountPercentage = user?.id && token
+    ? Math.min(100, Math.max(0, Number(user?.discount_percentage) || 0))
+    : 0;
+  const displayedDiscountAmount =
+    displayedSubtotal * (membershipDiscountPercentage / 100);
+  const displayedTotal = displayedSubtotal - displayedDiscountAmount;
+  const membershipTier = user?.membership_tier || user?.membership_status || "Member";
   const [formData, setFormData] = useState({
     customer_name: user?.name || "",
     customer_email: user?.email || "",
@@ -92,7 +100,7 @@ const CheckoutPage = ({ onNavigate }) => {
         0,
       );
       const discount = isRegisteredCustomer
-        ? Number(checkoutUser.discount_percentage || 0)
+        ? Math.min(100, Math.max(0, Number(checkoutUser.discount_percentage) || 0))
         : 0;
       const discountAmount = subtotal * (discount / 100);
       const orderNonce = crypto.randomUUID();
@@ -319,9 +327,21 @@ const CheckoutPage = ({ onNavigate }) => {
                 ))}
               </div>
               <div className="summary-divider"></div>
+              <div className="summary-item">
+                <span>{t("common.subtotal")}:</span>
+                <span>${displayedSubtotal.toFixed(2)}</span>
+              </div>
+              {membershipDiscountPercentage > 0 && (
+                <div className="summary-item membership-discount">
+                  <span>
+                    {membershipTier} {t("common.discount")} ({membershipDiscountPercentage}%):
+                  </span>
+                  <span>-${displayedDiscountAmount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="summary-total">
                 <span>{t("common.total")}:</span>
-                <span>${getTotalPrice().toFixed(2)}</span>
+                <span>${displayedTotal.toFixed(2)}</span>
               </div>
             </div>
           </aside>
